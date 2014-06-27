@@ -69,13 +69,17 @@ def storeData(values):
 	f.close()
 
 
-def loadData(view):
+def loadData(view, rtnDict=False):
 	if not os.path.isfile(PATH_SETTINGS_USER):
 		return False
 
 	content = eval(open(PATH_SETTINGS_USER, 'r').read())
-	view.values = content
-	return True
+
+	if rtnDict:
+		return content
+	else:
+		view.values = content
+		return True
 
 
 

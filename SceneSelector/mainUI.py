@@ -18,7 +18,7 @@ from SceneSelector_v008 import core, utils, style
 
 ROOT = "//bigfoot/kroetenlied/045_Production_Film/3D"
 TYPES = ["Assets", "Shots"]
-
+EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/emptyScene.mb"
 
 ##############################################################################################
 #
@@ -47,6 +47,34 @@ def list_SetSelection(listWidget, name, setColor=True):
 			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_ERROR_EMPTYLIST +"}")
 		return False
 
+
+
+
+class dragListWidget(QtGui.QListWidget):
+	def __init__(self, mainWindow, parent=None):
+		super(dragListWidget, self).__init__(parent)
+		self.setDragEnabled(True)
+
+		self.mainWindow = mainWindow;
+
+
+	def mouseMoveEvent(self, event):
+		print "MouseMove"
+
+		# Update Data
+		sceneFile = self.mainWindow.sceneFolder + "\\" + str(self.currentItem().text())
+		self.mainWindow.values["OpenScene"] = sceneFile
+		core.storeData(self.mainWindow.values)
+
+		# Set Data
+		data = QtCore.QMimeData()
+		url = QtCore.QUrl.fromLocalFile(EMPTY_SCENE)
+		data.setUrls([url])
+
+		# Set Drag
+		drag = QtGui.QDrag(self)
+		drag.setMimeData(data)
+		drag.exec_(QtCore.Qt.MoveAction)
 
 
 ##############################################################################################
@@ -150,7 +178,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#		SceneList		#
 		#						#
 		#########################
-		self.sceneList = QtGui.QListWidget()
+		self.sceneList = dragListWidget(self)
 		self.sceneList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
 		self.connect(self.sceneList, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Scene)
 		self.connect(self.sceneList, QtCore.SIGNAL("customContextMenuRequested(QPoint)" ), self.mouseClickRight_List_Scene)
@@ -199,7 +227,8 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		mainWidget.setLayout(main_grid)
 
 		QtGui.QMainWindow.__init__(self, parent)
-		self.setWindowTitle("Kroetenlied - SceneSelector")
+		self.setFixedWidth(430)
+		self.setWindowTitle("Kroetenlied - SceneSelector v009")
 		self.setCentralWidget(mainWidget)
 
 		self.setStyleSheet(style.STYLE)
@@ -233,6 +262,12 @@ class vuPipelineOverView(QtGui.QMainWindow):
 			core.listCtxt_ExploreFile(self.sceneFile)
 		else:
 			core.listCtxt_ExploreFolder(self.sceneFolder)
+
+
+	def listCtxt_createNew(self):
+		print "Create New: "
+		print self.selName + "_" + self.selTask + "_v001_" + utils.getArtist() + ".mb"
+
 
 	#                       #
 	#                       #
@@ -459,6 +494,10 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		# Show in Folder
 		ctxt_showFolder = self.ctxtMenue.addAction("Show in Folder")
 		self.connect(ctxt_showFolder, QtCore.SIGNAL("triggered()"), self.listCtxt_OpenFolder)
+
+		# Create New File
+		ctxt_showFolder = self.ctxtMenue.addAction("Create new File")
+		self.connect(ctxt_showFolder, QtCore.SIGNAL("triggered()"), self.listCtxt_createNew)
 
 		parentPosition = self.sceneList.mapToGlobal(QtCore.QPoint(0, 0))
 		self.ctxtMenue.move(parentPosition + QPos)
