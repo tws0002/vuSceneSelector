@@ -1,4 +1,4 @@
-HEADER_IMG = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/Header_SceneSelector_v006_vu.png"
+HEADER_IMG = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/Header.png"
 
 # GLOBAL
 COLOR_SELECTION = "#1a803c"
