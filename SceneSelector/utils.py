@@ -8,8 +8,7 @@ import getpass
 #		Settings
 #
 
-LOG_FILE = "//bigfoot/kroetenlied/_User/Vincent/Pipeline/LogFile_SceneSelector.log"
-
+LOG_FILE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/logFiles/logSceneSelector_"
 
 
 def timeStamp_Format(time):
@@ -35,21 +34,22 @@ def fileSize_HumanReadable(bytes):
 
 
 def log(event):
+	logFile = LOG_FILE + "_" + getpass.getuser() + "_" + datetime.datetime.now().strftime("%Y_%m_%d") + ".log"
+
 	# Stop Spaming!
-	if getpass.getuser() == "vullmann":
-		return
+	#if getpass.getuser() == "vullmann":
+	#	return
 
 	# Read old File
-	lines = open(LOG_FILE, 'r').readlines() if os.path.exists(LOG_FILE) else []
+	lines = open(logFile, 'r').readlines() if os.path.exists(logFile) else []
 
 	# Gather Data
-	time = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
-	user = getpass.getuser() + " " * (12-len(getpass.getuser()))
-	newLine = "Time: " + time + " || User: " + user + " || Event: " + event + "\n"
+	time = datetime.datetime.now().strftime("%H:%M:%S")
+	newLine = "Time: " + time + " || Event: " + event + "\n"
 
 	# Add Data and write File
 	lines.append(newLine)
-	out = open(LOG_FILE, 'w')
+	out = open(logFile, 'w')
 	out.writelines(lines)
 	out.close()
 
