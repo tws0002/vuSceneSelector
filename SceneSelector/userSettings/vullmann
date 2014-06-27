@@ -1,0 +1,10 @@
+{'ShotScene': 'Z020_ANIM_v005_sl_initCookieRigLegsArmsMouthIO.mb',
+ 'AssetScene': 'MukA_GEO_v010_ks.mb',
+ 'OpenScene': '//bigfoot/kroetenlied/045_Production_Film/3D\\ASSETS\\Charakter\\100_MusikKroeteBase\\010_MukBase_GEO\\MukBase_GEO_v004_ks.mb',
+ 'SceneType': 'Assets',
+ 'AssetName': 'MusikKroeteBase',
+ 'ShotName': 'Z020_CookieTest01',
+ 'AssetGroup': 'MusikKroeten',
+ 'ShotSeq': 'Z',
+ 'AssetTask': 'GEO',
+ 'ShotTask': 'ANIM'}

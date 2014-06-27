@@ -1,0 +1,10 @@
+{'ShotScene': 'Z010_ANIM_v001_sl.mb',
+ 'AssetScene': 'MusikKroeteB_GEO_v006_ks.mb',
+ 'OpenScene': '',
+ 'SceneType': 'Shots',
+ 'AssetName': 'Kroete',
+ 'ShotName': 'Z010_RigTest01',
+ 'AssetGroup': 'Heros',
+ 'ShotSeq': 'Z',
+ 'AssetTask': 'GEO',
+ 'ShotTask': 'ANIM'}
