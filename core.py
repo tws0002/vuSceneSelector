@@ -1,5 +1,6 @@
 import os
-from SceneSelector_v008 import utils
+import shutil
+from SceneSelector_v010 import utils
 
 
 ##############################################################################################
@@ -13,7 +14,7 @@ PIPELINE_FOLDER = PROJECT_ROOT + "/060_Software/vuPipeline"
 
 MAYA_BATCH = PIPELINE_FOLDER + "/startMaya.bat"
 PATH_SETTINGS_USER = PIPELINE_FOLDER + "/PythonModules/SceneSelector/userSettings/" + utils.getArtist(short=False)
-
+EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/emptyScene.mb"
 
 def checkFiles(path):
 	if not os.path.exists(path):
@@ -53,6 +54,11 @@ def listCtxt_ExploreFile(path):
 def listCtxt_ExploreFolder(path):
 	utils.log("ExploreFolder: " + path)
 	os.system("explorer /root," + path.replace("/", "\\"))
+
+
+def listCtxt_CreateNewFile(path):
+	shutil.copy2(EMPTY_SCENE, path)
+
 
 
 #########################

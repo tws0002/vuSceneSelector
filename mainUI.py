@@ -6,7 +6,7 @@ sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules")
 import klAssetNames, klTaskNames, klShotNames
 
 sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/_DEV")
-from SceneSelector_v008 import core, utils, style
+from SceneSelector import core, utils, style
 
 
 
@@ -228,7 +228,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 		QtGui.QMainWindow.__init__(self, parent)
 		self.setFixedWidth(430)
-		self.setWindowTitle("Kroetenlied - SceneSelector v009")
+		self.setWindowTitle("Kroetenlied - SceneSelector v010")
 		self.setCentralWidget(mainWidget)
 
 		self.setStyleSheet(style.STYLE)
@@ -263,11 +263,9 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		else:
 			core.listCtxt_ExploreFolder(self.sceneFolder)
 
-
 	def listCtxt_createNew(self):
-		print "Create New: "
-		print self.selName + "_" + self.selTask + "_v001_" + utils.getArtist() + ".mb"
-
+		core.listCtxt_CreateNewFile(self.sceneFolder + "\\" + self.selName + "_" + self.selTask + "_v001_" + utils.getArtist() + ".mb")
+		self.updateLists()
 
 	#                       #
 	#                       #
@@ -466,6 +464,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 	def mouseClickLeft_List_Group(self, item):
 		self.selGroup = str(item.text())
+		self.selName = ""
 		self.updateValues()
 		self.updateLists()
 
@@ -498,6 +497,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		# Create New File
 		ctxt_showFolder = self.ctxtMenue.addAction("Create new File")
 		self.connect(ctxt_showFolder, QtCore.SIGNAL("triggered()"), self.listCtxt_createNew)
+		ctxt_showFolder.setEnabled(not self.sceneList.count())
 
 		parentPosition = self.sceneList.mapToGlobal(QtCore.QPoint(0, 0))
 		self.ctxtMenue.move(parentPosition + QPos)
@@ -515,7 +515,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 #
 #
 if __name__ == "__main__":
-	utils.log("main")
+	utils.log("Open SceneSelector")
 
 	app = QtGui.QApplication(sys.argv)
 
