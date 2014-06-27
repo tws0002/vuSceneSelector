@@ -22,8 +22,8 @@ def getFile_LastModify(path):
 def getFile_FileSize(path):
 	return fileSize_HumanReadable(os.path.getsize(path))
 
-def getArtist():
-	return getpass.getuser()[:2]
+def getArtist(short=True):
+	return getpass.getuser()[:2] if short else getpass.getuser()
 
 
 def fileSize_HumanReadable(bytes):

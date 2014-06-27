@@ -2,10 +2,11 @@ from PyQt4 import QtCore, QtGui
 
 
 import sys
-sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/_DEV")
 sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules")
 import klAssetNames, klTaskNames, klShotNames
-from SceneSelector_v005 import core, utils, style
+
+sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/_DEV")
+from SceneSelector_v008 import core, utils, style
 
 
 
@@ -19,17 +20,33 @@ ROOT = "//bigfoot/kroetenlied/045_Production_Film/3D"
 TYPES = ["Assets", "Shots"]
 
 
-class PushButton(QtGui.QPushButton):
-	def __init__(self, parent=None):
-		QtGui.QPushButton.__init__(self, parent)
-		self.setMouseTracking(True)
+##############################################################################################
+#
+#
+#		Helpers
+#
 
-	def enterEvent(self, event):
-		self.origStyle = self.styleSheet()
-		self.setStyleSheet("QPushButton {background: " + style.COLOR_HOVER + "}")
 
-	def leaveEvent(self, event):
-		self.setStyleSheet(self.origStyle)
+def listRezise(listWidget, hMin, wMin, hMax=None, wMax=None):
+	listWidget.setMinimumHeight(hMin)
+	listWidget.setMaximumHeight(hMax if hMax else hMin)
+
+	listWidget.setMinimumWidth(wMin)
+	listWidget.setMaximumWidth(wMax if wMax else wMin)
+
+
+def list_SetSelection(listWidget, name, setColor=True):
+	item = listWidget.findItems(name, QtCore.Qt.MatchExactly)
+	if item:
+		listWidget.setCurrentItem(item[0])
+		if setColor:
+			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_LIST +"}")
+		return True
+	else:
+		if setColor:
+			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_ERROR_EMPTYLIST +"}")
+		return False
+
 
 
 ##############################################################################################
@@ -42,19 +59,28 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		style.dark()
 
 		# Vars
-		self.assetName = None
-		self.taskName = None
-		self.seq = None
-		self.oldAssetName = None
-		self.oldTaskName = None
-		self.oldSeq = None
-		self.oldSceneFile = None
+		self.sceneFolder = ""	# Current Folder
+		self.sceneFile = ""		# Current SceneFile
 
-		self.sceneFolder = None
-		self.sceneFile = None
+		# Variables for Interface
+		self.selType = ""
+		self.selGroup = ""
+		self.selTask = ""
+		self.selName = ""
+		self.selScene = ""
 
-		self.sceneType = TYPES[0]
-
+		# Dict to Store all CoreValues
+		self.values = {
+			"SceneType": "",
+			"AssetGroup": "",
+			"AssetTask": "",
+			"AssetName": "",
+			"AssetScene": "",
+			"ShotSeq": "",
+			"ShotTask": "",
+			"ShotName": "",
+			"ShotScene": "",
+		}
 
 
 		#########################
@@ -64,66 +90,60 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#########################
 		header = QtGui.QLabel()
 		header.setPixmap(QtGui.QPixmap(style.HEADER_IMG))
-		header.setScaledContents(True)
 
 
 		#########################
 		#						#
-		#		DropDowns		#
+		#         lists         #
 		#						#
 		#########################
-		gridLeft = QtGui.QGridLayout()
-
-
-		# Buttons
-		self.btnAssets = PushButton("Assets")
-		self.btnShots = PushButton("Shots")
-		self.btnAssets.clicked.connect(self.btnClick_Assets)
-		self.btnShots.clicked.connect(self.btnClick_Shots)
-
-		gridLeft.addWidget(self.btnAssets, 0, 0)
-		gridLeft.addWidget(self.btnShots, 0, 1)
-
+		gridLists = QtGui.QGridLayout()
 
 		# Labels
 		self.labelType = QtGui.QLabel("Type:")
 		self.labelName = QtGui.QLabel("Asset:")
 		self.labelTask = QtGui.QLabel("Task:")
 		self.labelSeq = QtGui.QLabel("Sequence:")
-
-		gridLeft.addWidget(self.labelTask, 3, 0)
-		gridLeft.addWidget(self.labelName, 1, 1)
-		gridLeft.addWidget(self.labelSeq, 1, 0)
+		self.labelScenes = QtGui.QLabel("Scenes:")
 
 
-		# DropDown TaskNames
-		self.dropDownTaskNames = QtGui.QListWidget()
-		self.dropDownTaskNames.addItems(klTaskNames.tasksNames3D_Names)
-		self.connect(self.dropDownTaskNames, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.listClick_Left_Task)
-		gridLeft.addWidget(self.dropDownTaskNames, 4, 0)
-		self.dropDownTaskNames.setMaximumWidth(100)
+		# list Seq
+		self.listType = QtGui.QListWidget()
+		self.listSeq = QtGui.QListWidget()
+		self.listTaskNames = QtGui.QListWidget()
+		self.listAssetNames = QtGui.QListWidget()
 
-		# DropDown TaskNames
-		self.dropDownSeq = QtGui.QListWidget()
-		self.dropDownSeq.addItems(["A","B","C","D","E"])
-		self.connect(self.dropDownSeq, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.listClick_Left_Seq)
-		gridLeft.addWidget(self.dropDownSeq, 2, 0)
-		self.dropDownSeq.setMaximumWidth(100)
+		self.listType.addItems(TYPES)
 
-		# DropDown AssetNames
-		self.dropDownAssetNames = QtGui.QListWidget()
-		self.dropDownAssetNames.addItems(klAssetNames.AssetNames)
-		self.connect(self.dropDownAssetNames, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.listClick_Left_Asset)
-		gridLeft.addWidget(self.dropDownAssetNames, 2, 1, 3, 1)
+		self.connect(self.listType, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Type)
+		self.connect(self.listSeq, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Group)
+		self.connect(self.listTaskNames, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Task)
+		self.connect(self.listAssetNames, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Asset)
 
-		self.dropDownAssetNames.setMaximumWidth(100)
+		widthSmall = 82
+		widthWide = 150
+
+		listRezise(self.listType, 172-(17*3), widthSmall)
+		listRezise(self.listSeq, 172-(17*3), widthSmall)
+		listRezise(self.listTaskNames, 172-(17*3), widthSmall)
+		listRezise(self.listAssetNames, 172-(17*3), widthWide)
+
+		gridLists.setRowStretch(3, 1)
+
+		gridLists.addWidget(self.labelType, 0, 0)
+		gridLists.addWidget(self.listType, 1, 0)
+
+		gridLists.addWidget(self.labelSeq, 0, 1)
+		gridLists.addWidget(self.listSeq, 1, 1)
+
+		gridLists.addWidget(self.labelTask, 0, 3)
+		gridLists.addWidget(self.listTaskNames, 1, 3)
+
+		gridLists.addWidget(self.labelName, 0, 2)
+		gridLists.addWidget(self.listAssetNames, 1, 2)
 
 
-		gridLeft.setRowStretch(2, 1)
-		gridLeft.setRowStretch(4, 1)
-
-
-		gridRight = QtGui.QGridLayout()
+		gridScenes = QtGui.QGridLayout()
 
 		#########################
 		#						#
@@ -132,10 +152,13 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#########################
 		self.sceneList = QtGui.QListWidget()
 		self.sceneList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-		self.connect(self.sceneList, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.listClick_Left_Scene)
-		self.connect(self.sceneList, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem*)"), self.listDoubleClick)
-		self.connect(self.sceneList, QtCore.SIGNAL("customContextMenuRequested(QPoint)" ), self.listClick_Right)
-		gridRight.addWidget(self.sceneList, 0, 0)
+		self.connect(self.sceneList, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Scene)
+		self.connect(self.sceneList, QtCore.SIGNAL("customContextMenuRequested(QPoint)" ), self.mouseClickRight_List_Scene)
+		self.connect(self.sceneList, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem*)"), self.mouseClickDouble_List_Scene)
+		gridScenes.addWidget(self.sceneList, 0, 0)
+
+		self.sceneList.setStyleSheet("QListWidget{background: #262626}")
+
 
 
 		#########################
@@ -154,9 +177,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		gridDetails.addWidget(QtGui.QLabel("Date:"), 0, 0)
 		gridDetails.addWidget(QtGui.QLabel("Size:"), 0, 1)
 
-
-		gridRight.addWidget(grpDetails, 1, 0)
-
+		gridScenes.addWidget(grpDetails, 1, 0)
 
 
 		#########################
@@ -165,9 +186,13 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#						#
 		#########################
 		main_grid = QtGui.QGridLayout()
-		main_grid.addWidget(header, 0, 0, 1,2)
-		main_grid.addLayout(gridLeft, 1, 0)
-		main_grid.addLayout(gridRight, 1, 1)
+		main_grid.addWidget(header, 0, 0)
+
+		main_grid.addLayout(gridLists, 1, 0)
+		main_grid.addWidget(self.labelScenes, 2, 0)
+		main_grid.addLayout(gridScenes, 3, 0)
+
+		main_grid.setRowStretch(3, 1)
 
 
 		mainWidget = QtGui.QWidget()
@@ -177,70 +202,16 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.setWindowTitle("Kroetenlied - SceneSelector")
 		self.setCentralWidget(mainWidget)
 
-		self.btnClick_Assets()
 		self.setStyleSheet(style.STYLE)
-		self.gridLeft = gridLeft
+
+		if core.loadData(self):
+			self.loadValues()
+			self.updateLists()
+		self.updateList_TextColor()
 
 
-
-	#                       #
-	#                       #
-#################################
-	#                       #
-	#        Updates        #
-	#                       #
-#################################
-	#                       #
-	#                       #
-
-	def updateVars(self):
-		if self.dropDownAssetNames.currentItem():
-			self.assetName = str(self.dropDownAssetNames.currentItem().text())
-
-		if self.dropDownTaskNames.currentItem():
-			self.taskName = str(self.dropDownTaskNames.currentItem().text())
-
-		if self.dropDownSeq.currentItem():
-			self.seq = str(self.dropDownSeq.currentItem().text())
-
-		if not self.assetName or not self.taskName or not self.seq:
-			return
-
-		if self.sceneType == TYPES[0]:
-			self.sceneFolder = ROOT + "\\ASSETS\\Charakter\\"
-			self.sceneFolder += klAssetNames.getNum(self.assetName) + "_" + self.assetName + "\\"
-			self.sceneFolder += klTaskNames.getTaskNum(self.taskName) + "_" + klAssetNames.getCode(self.assetName) + "_" + self.taskName
-
-		else:
-			self.sceneFolder = ROOT + "\\SHOTS\\"
-			self.sceneFolder += klTaskNames.getTaskNum(self.taskName) + "_" + self.taskName + "\\"
-			self.sceneFolder += klShotNames.getCode(self.assetName) + "_" + self.taskName + "_" + klShotNames.getName(self.assetName)
-
-
-
-	def updateList(self):
-		# Clear List and Details
-		self.sceneList.clear()
-		self.listDetails_Clear()
-		self.sceneFile = None
-
-		# ReFill List
-		for sceneFile in core.findFiles(self.sceneFolder):
-			self.sceneList.addItem(sceneFile)
-
-
-	def listDetails_Clear(self):
-		self.detailsTime.setText("")
-		self.detailsSize.setText("")
-		return True
-
-
-	def listDetails_Update(self):
-		self.detailsTime.setText(utils.getFile_LastModify(self.sceneFile))
-		self.detailsSize.setText(utils.getFile_FileSize(self.sceneFile))
-
-
-
+	def closeEvent(self, event):
+		core.storeData(self.values)
 
 
 
@@ -253,78 +224,237 @@ class vuPipelineOverView(QtGui.QMainWindow):
 #################################
 	#                       #
 	#                       #
+
+	def listCtxt_Refresh(self):
+		self.updateLists()
+
 	def listCtxt_OpenFolder(self):
 		if self.sceneFile:
 			core.listCtxt_ExploreFile(self.sceneFile)
 		else:
 			core.listCtxt_ExploreFolder(self.sceneFolder)
 
+	#                       #
+	#                       #
+#################################
+	#                       #
+	#        Updates        #
+	#                       #
+#################################
+	#                       #
+	#                       #
 
-
-	################
-	# List Clicks
-	#
-
-	def updateList_Assets(self):
-		selSequence = self.dropDownSeq.currentItem()
-		if selSequence:
-			if self.sceneType == "Assets":
-				if selSequence.text() == "Heros":
-					assets = [assetName for assetName in klAssetNames.AssetNames if not assetName.startswith("Musik")]
-				else:
-					assets = [assetName for assetName in klAssetNames.AssetNames if assetName.startswith("Musik")]
-
-				self.dropDownAssetNames.clear()
-				self.dropDownAssetNames.addItems(assets)
-
-
-	def checkList(self, listWidget):
-		if listWidget.currentItem():
-			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_LIST +"}")
-		else:
-			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_ERROR_EMPTYLIST +"}")
-			return False
+	def listDetails_Clear(self):
+		self.detailsTime.setText("")
+		self.detailsSize.setText("")
 		return True
 
 
-	def listClick_Left(self):
-		# Update Vars
-		self.updateVars()
+	def listDetails_Update(self):
+		self.detailsTime.setText(utils.getFile_LastModify(self.sceneFile))
+		self.detailsSize.setText(utils.getFile_FileSize(self.sceneFile))
+		return True
 
-		# Check Lists
-		check = True
-		for listWidget in [self.dropDownTaskNames, self.dropDownSeq, self.dropDownAssetNames]:
-			if not self.checkList(listWidget):
-				check = False
 
-		if check:
-			self.updateList()
+	def updateValues(self):
+		self.values["SceneType"] = self.selType
+
+		if self.selType == TYPES[0]:
+			self.values["AssetGroup"] = self.selGroup
+			self.values["AssetTask"] = self.selTask
+			self.values["AssetName"] = self.selName
+			self.values["AssetScene"] = self.selScene
+
+		elif self.selType == TYPES[1]:
+			self.values["ShotSeq"] = self.selGroup
+			self.values["ShotTask"] = self.selTask
+			self.values["ShotName"] = self.selName
+			self.values["ShotScene"] = self.selScene
+
+		return True
+
+
+	def loadValues(self):
+		self.selType = self.values["SceneType"]
+
+		if self.selType == TYPES[0]:
+			self.selGroup = self.values["AssetGroup"]
+			self.selTask = self.values["AssetTask"]
+			self.selName = self.values["AssetName"]
+			self.selScene = self.values["AssetScene"]
+
+		elif self.selType == TYPES[1]:
+			self.selGroup = self.values["ShotSeq"]
+			self.selTask = self.values["ShotTask"]
+			self.selName = self.values["ShotName"]
+			self.selScene = self.values["ShotScene"]
+
+		return True
+
+
+	def updateLists(self):
+		self.listType.clear()
+		self.listSeq.clear()
+		self.listTaskNames.clear()
+		self.listAssetNames.clear()
+		self.sceneList.clear()
+
+		# SelType
+		self.listType.addItems(TYPES)
+		selType = self.values["SceneType"]
+		list_SetSelection(self.listType, selType)
+
+
+		# Seq + Task = Type Dependent:
+		if selType  == TYPES[0]:
+			self.listSeq.addItems(["Heros", "MusikKroeten"])
+			self.listTaskNames.addItems(klTaskNames.tasksNames3D_Names)
+
+			selGroup = self.values["AssetGroup"]
+			selTask = self.values["AssetTask"]
+
 		else:
-			self.sceneList.clear()
+			self.listSeq.addItems(klShotNames.ShotSeq)
+			self.listTaskNames.addItems(klTaskNames.tasksNamesShots_Names)
+
+			selGroup = self.values["ShotSeq"]
+			selTask = self.values["ShotTask"]
+
+		list_SetSelection(self.listSeq, selGroup)
+		list_SetSelection(self.listTaskNames, selTask)
 
 
-	def listClick_Left_Task(self, item):
-		self.listClick_Left()
+		# Assets + Shots = Seq Dependent
+		if selType  == TYPES[0]:
+			names = [name for name in klAssetNames.AssetNames if klAssetNames.getGrp(name) == selGroup]
+			selName = self.values["AssetName"]
+		elif selType == TYPES[1]:
+			names = [name for name in klShotNames.ShotNamesCompl if klShotNames.getSeq(name) == selGroup]
+			selName = self.values["ShotName"]
 
-	def listClick_Left_Seq(self, item):
-		self.updateList_Assets()
-		self.listClick_Left()
-
-	def listClick_Left_Asset(self, item):
-		self.listClick_Left()
+		self.listAssetNames.addItems(names)
+		list_SetSelection(self.listAssetNames, selName)
 
 
-	def listClick_Left_Scene(self, item):
-		self.sceneFile = self.sceneFolder + "/" + str(item.text())
+		# Scenes = Asset/Shot Dependent
+		if "" in [selType, selGroup, selTask, selName]:
+			self.listDetails_Clear()
+			return
+
+		if selType  == TYPES[0]:
+			self.sceneFolder = ROOT + "\\ASSETS\\Charakter\\"
+			self.sceneFolder += klAssetNames.getNum(selName) + "_" + selName + "\\"
+			self.sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + klAssetNames.getCode(selName) + "_" + selTask
+			selScene = self.values["AssetScene"]
+
+		elif selType == TYPES[1]:
+			self.sceneFolder = ROOT + "\\SHOTS\\"
+			self.sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + selTask + "\\"
+			self.sceneFolder += klShotNames.getCode(selName) + "_" + selTask + "_" + klShotNames.getName(selName)
+			selScene = self.values["ShotScene"]
+
+		if self.sceneFolder:
+			files = core.findFiles(self.sceneFolder)
+			if files:
+				self.sceneList.addItems(files)
+			sceneSelected = list_SetSelection(self.sceneList, selScene,setColor=False)
+
+		if sceneSelected:
+			self.sceneFile = self.sceneFolder + "\\" + selScene
+			self.listDetails_Update()
+		else:
+			self.sceneFile = ""
+			self.listDetails_Clear()
+
+
+	def updateList_ItemTextColor(self, listItem, selName, selTask):
+		if self.selType  == TYPES[0]:
+			sceneFolder = ROOT + "\\ASSETS\\Charakter\\"
+			sceneFolder += klAssetNames.getNum(selName) + "_" + selName + "\\"
+			sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + klAssetNames.getCode(selName) + "_" + selTask
+
+		elif self.selType == TYPES[1]:
+			sceneFolder = ROOT + "\\SHOTS\\"
+			sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + selTask + "\\"
+			sceneFolder += klShotNames.getCode(selName) + "_" + selTask + "_" + klShotNames.getName(selName)
+
+		if not core.checkFiles(sceneFolder):
+			listItem.setTextColor(QtGui.QColor(128,128,128))
+
+
+	def updateList_TextColor(self):
+
+		# Loop over Tasks
+		if self.listAssetNames.currentItem():
+			selName = str(self.listAssetNames.currentItem().text())
+			for i in range(self.listTaskNames.count()):
+				listItem = self.listTaskNames.item(i)
+				selTask = str(listItem.text())
+
+				self.updateList_ItemTextColor(listItem, selName, selTask)
+
+		# Loop over Names
+		if self.listTaskNames.currentItem():
+			selTask = str(self.listTaskNames.currentItem().text())
+			for i in range(self.listAssetNames.count()):
+				listItem = self.listAssetNames.item(i)
+				selName = str(listItem.text())
+
+				self.updateList_ItemTextColor(listItem, selName, selTask)
+
+
+##############################################################################################
+#
+#
+#		Mouse Clicks
+#
+
+	def mouseClickLeft_List_Type(self, item):
+		# Set Vars
+		self.selType = str(item.text())
+		self.values["SceneType"] = self.selType
+		self.loadValues()
+		self.updateLists()
+		self.updateList_TextColor()
+
+		# Change UI
+		self.labelName.setText(self.selType)
+		self.labelSeq.setText("Groups:") if self.selType == TYPES[0] else self.labelSeq.setText("Sequence:")
+
+
+	def mouseClickLeft_List_Task(self, item):
+		self.selTask = str(item.text())
+		self.updateValues()
+		self.updateLists()
+		self.updateList_TextColor()
+
+
+	def mouseClickLeft_List_Group(self, item):
+		self.selGroup = str(item.text())
+		self.updateValues()
+		self.updateLists()
+
+
+	def mouseClickLeft_List_Asset(self, item):
+		self.selName = str(item.text())
+		self.updateValues()
+		self.updateLists()
+		self.updateList_TextColor()
+
+
+	def mouseClickLeft_List_Scene(self, item):
+		self.selScene = str(item.text())
+		self.updateValues()
+		self.sceneFile = self.sceneFolder + "\\" + self.selScene
 		self.listDetails_Update()
 
 
-	def listClick_Right(self, QPos):
+	def mouseClickRight_List_Scene(self, QPos):
 		self.ctxtMenue= QtGui.QMenu()
 
 		# Refresh
 		ctxt_showFolder = self.ctxtMenue.addAction("Refresh List")
-		self.connect(ctxt_showFolder, QtCore.SIGNAL("triggered()"), self.updateList)
+		self.connect(ctxt_showFolder, QtCore.SIGNAL("triggered()"), self.listCtxt_Refresh)
 
 		# Show in Folder
 		ctxt_showFolder = self.ctxtMenue.addAction("Show in Folder")
@@ -334,115 +464,9 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.ctxtMenue.move(parentPosition + QPos)
 		self.ctxtMenue.show()
 
-		print "RIGHT: self.oldSceneFile: " + str(self.oldSceneFile)
 
-
-	def listDoubleClick(self, item):
+	def mouseClickDouble_List_Scene(self, item):
 		core.openScene_Maya(self.sceneFile)
-
-
-	def listRezise(self, listWidget):
-		listWidget.setMinimumHeight(listWidget.count() * 17 + 4)
-
-	def listHelper_AutoSelect(self):
-		for listWidget in [self.dropDownSeq, self.dropDownAssetNames, self.dropDownTaskNames, self.sceneList]:
-			if not listWidget.currentItem() and listWidget.count() == 1:
-				listWidget.setCurrentItem(listWidget.item(0))
-				self.checkList(listWidget)
-
-
-	def btnHelper_ClearLists(self):
-		self.dropDownAssetNames.clear()
-		self.dropDownTaskNames.clear()
-		self.dropDownSeq.clear()
-
-
-	def btnHelper_RestoreData(self):
-		# Swap Variables
-		self.seq, self.oldSeq = self.oldSeq, self.seq
-		self.taskName, self.oldTaskName = self.oldTaskName, self.taskName
-		self.assetName, self.oldAssetName = self.oldAssetName, self.assetName
-		tmpSceneFile = self.oldSceneFile
-		self.oldSceneFile = self.sceneFile
-
-		if self.seq:
-			item = self.dropDownSeq.findItems(self.seq, QtCore.Qt.MatchExactly)
-			if item:
-				self.dropDownSeq.setCurrentItem(item[0])
-
-		if self.taskName:
-			item = self.dropDownTaskNames.findItems(self.taskName, QtCore.Qt.MatchExactly)
-			if item:
-				self.dropDownTaskNames.setCurrentItem(item[0])
-
-		# Update Asset-List
-		self.updateList_Assets()
-		if self.assetName:
-			item = self.dropDownAssetNames.findItems(self.assetName, QtCore.Qt.MatchExactly)
-			if item:
-				self.dropDownAssetNames.setCurrentItem(item[0])
-
-		# Update Lists / Update Scene-List
-		self.listClick_Left()
-
-		if tmpSceneFile:
-			self.sceneFile = tmpSceneFile
-			item = self.sceneList.findItems(self.sceneFile.split("/")[-1], QtCore.Qt.MatchExactly)	#TODO: Fix .split
-			if item:
-				self.sceneList.setCurrentItem(item[0])
-				self.listDetails_Update()
-
-
-	def btnClick_Assets(self):
-		self.sceneType = "Assets"
-
-		# Update Button Colors
-		self.btnShots.setStyleSheet("QPushButton {background: " + style.COLOR_LIST +"}")
-		self.btnAssets.setStyleSheet("QPushButton {background: " + style.COLOR_SELECTION + "}")
-		self.btnAssets.origStyle = "QPushButton {background: " + style.COLOR_SELECTION + "}"
-
-		self.labelName.setText("Asset:")
-		self.labelSeq.setText("Groups:")
-
-		self.btnHelper_ClearLists()
-
-		self.dropDownTaskNames.addItems(klTaskNames.tasksNames3D_Names)
-		self.dropDownSeq.addItems(["Heros", "MusikKroeten"])
-
-		self.btnHelper_RestoreData()
-		self.listHelper_AutoSelect()
-
-		self.listRezise(self.dropDownTaskNames)
-		self.listRezise(self.dropDownSeq)
-
-
-	def btnClick_Shots(self):
-		self.sceneType = "Shots"
-
-		# Update Button Colors
-		self.btnAssets.setStyleSheet("QPushButton {background: " + style.COLOR_BACKGROUND +"}")
-		self.btnShots.setStyleSheet("QPushButton {background: " + style.COLOR_SELECTION + "}")
-		self.btnShots.origStyle = "QPushButton {background: " + style.COLOR_SELECTION + "}"
-
-		self.labelName.setText("Shots:")
-		self.labelSeq.setText("Sequence:")
-
-		self.btnHelper_ClearLists()
-
-		self.dropDownAssetNames.addItems(klShotNames.ShotNamesCompl)
-		self.dropDownTaskNames.addItems(klTaskNames.tasksNamesShots_Names)
-		self.dropDownSeq.addItems(klShotNames.ShotSeq)
-
-		self.btnHelper_RestoreData()
-		self.listHelper_AutoSelect()
-
-		self.listRezise(self.dropDownTaskNames)
-		self.listRezise(self.dropDownSeq)
-
-
-
-
-
 
 
 ##############################################################################################
@@ -459,3 +483,14 @@ if __name__ == "__main__":
 	form = vuPipelineOverView()
 	form.show()
 	app.exec_()
+
+
+
+"""
+	def listHelper_AutoSelect(self):
+		return
+		for listWidget in [self.listSeq, self.listAssetNames, self.listTaskNames, self.sceneList]:
+			if not listWidget.currentItem() and listWidget.count() == 1:
+				listWidget.setCurrentItem(listWidget.item(0))
+				self.checkList(listWidget)
+"""

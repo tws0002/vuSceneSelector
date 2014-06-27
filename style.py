@@ -1,4 +1,4 @@
-HEADER_IMG = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/Header_SceneSelector_v003_vu.png"
+HEADER_IMG = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/Header_SceneSelector_v005_vu.png"
 
 # GLOBAL
 COLOR_SELECTION = "#1a803c"
@@ -81,7 +81,7 @@ def dark():
 	global COLOR_BACKGROUND; 	COLOR_BACKGROUND = "#444444"
 	global COLOR_TEXT;			COLOR_TEXT = "#c8c8c8"
 	global COLOR_BORDER;		COLOR_BORDER = "#272727"
-	global COLOR_LIST;			COLOR_LIST = "#323232"
+	global COLOR_LIST;			COLOR_LIST = "#333333"
 
 	global STYLE; STYLE = template % {
 			"COLOR_BACKGROUND": COLOR_BACKGROUND,
