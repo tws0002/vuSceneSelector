@@ -44,7 +44,7 @@ def log(event):
 
 	# Gather Data
 	time = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
-	user = getpass.getuser() + " " * (12-len(getpass.getuser()))
+	user = getpass.getuser() + " "*12-len(getpass.getuser())
 	newLine = "Time: " + time + " || User: " + user + " || Event: " + event + "\n"
 
 	# Add Data and write File
