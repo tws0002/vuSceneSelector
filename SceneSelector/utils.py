@@ -8,7 +8,7 @@ import getpass
 #		Settings
 #
 
-LOG_FILE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/logFiles/logSceneSelector_"
+LOG_FILE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/logFiles/logSceneSelector"
 
 
 def timeStamp_Format(time):
@@ -45,7 +45,7 @@ def log(event):
 
 	# Gather Data
 	time = datetime.datetime.now().strftime("%H:%M:%S")
-	newLine = "Time: " + time + " || Event: " + event + "\n"
+	newLine = time + " || Event: " + event + "\n"
 
 	# Add Data and write File
 	lines.append(newLine)

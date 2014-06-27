@@ -1,6 +1,6 @@
 import os
 import shutil
-from SceneSelector_v010 import utils
+from SceneSelector import utils
 
 
 ##############################################################################################
