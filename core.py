@@ -13,8 +13,8 @@ PROJECT_ROOT = "//bigfoot/kroetenlied"
 PIPELINE_FOLDER = PROJECT_ROOT + "/060_Software/vuPipeline"
 
 MAYA_BATCH = PIPELINE_FOLDER + "/startMaya.bat"
-PATH_SETTINGS_USER = PIPELINE_FOLDER + "/PythonModules/SceneSelector/userSettings/" + utils.getArtist(short=False)
-EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/emptyScene.mb"
+PATH_SETTINGS_USER = PIPELINE_FOLDER + "/PythonModules/vuSceneSelector/userSettings/" + utils.getArtist(short=False)
+EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/vuSceneSelector/emptyScene.mb"
 
 def checkFiles(path):
 	if not os.path.exists(path):

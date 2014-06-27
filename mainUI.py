@@ -18,7 +18,7 @@ from SceneSelector import core, utils, style
 
 ROOT = "//bigfoot/kroetenlied/045_Production_Film/3D"
 TYPES = ["Assets", "Shots"]
-EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/emptyScene.mb"
+EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/vuSceneSelector/emptyScene.mb"
 
 ##############################################################################################
 #
