@@ -5,7 +5,7 @@ import sys
 sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/_DEV")
 sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules")
 import klAssetNames, klTaskNames, klShotNames
-from SceneSelector_v005 import core, utils, style
+from SceneSelector_v005 import core, utils
 
 
 
@@ -16,7 +16,50 @@ from SceneSelector_v005 import core, utils, style
 #
 
 ROOT = "//bigfoot/kroetenlied/045_Production_Film/3D"
+HEADER_IMG = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/SceneSelector/Header_SceneSelector_v003_vu.png"
 TYPES = ["Assets", "Shots"]
+
+
+COLOR_SELECTION = "#1a803c"
+COLOR_HOVER = "#4d805e"
+COLOR_ERROR_EMPTYLIST = "#cc4747"
+
+style = """
+QPushButton
+{
+	background: #FFF;
+	padding: 3px;
+	border-width: 1px;
+	border-color: #828790;
+	border-style: solid;
+}
+
+QPushButton::hover
+{
+	background: #4d805e;
+}
+
+QGroupBox
+{
+	border-width: 1px;
+	border-color: #828790;
+	border-style: solid;
+}
+
+QListWidget:item:selected:active
+{
+	background: #1a803c;
+}
+
+QListWidget:item:hover
+{
+	color: white;
+	background: #4d805e;
+}
+
+QListWidget:item:selected:!disabled {
+	background: #1a803c;
+}"""
 
 
 class PushButton(QtGui.QPushButton):
@@ -26,10 +69,12 @@ class PushButton(QtGui.QPushButton):
 
 	def enterEvent(self, event):
 		self.origStyle = self.styleSheet()
-		self.setStyleSheet("QPushButton {background: " + style.COLOR_HOVER + "}")
+		self.setStyleSheet("QPushButton {background: " + COLOR_HOVER + "}")
 
 	def leaveEvent(self, event):
 		self.setStyleSheet(self.origStyle)
+
+
 
 
 ##############################################################################################
@@ -39,7 +84,6 @@ class PushButton(QtGui.QPushButton):
 #
 class vuPipelineOverView(QtGui.QMainWindow):
 	def __init__(self, parent=None):
-		style.dark()
 
 		# Vars
 		self.assetName = None
@@ -63,7 +107,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#						#
 		#########################
 		header = QtGui.QLabel()
-		header.setPixmap(QtGui.QPixmap(style.HEADER_IMG))
+		header.setPixmap(QtGui.QPixmap(HEADER_IMG))
 		header.setScaledContents(True)
 
 
@@ -181,8 +225,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#self.updateList()
 
 		self.btnClick_Assets()
-		#self.setStyleSheet(style.light)
-		self.setStyleSheet(style.STYLE)
+		self.setStyleSheet(style)
 		self.gridLeft = gridLeft
 
 
@@ -284,15 +327,6 @@ class vuPipelineOverView(QtGui.QMainWindow):
 				self.dropDownAssetNames.addItems(assets)
 
 
-	def checkList(self, listWidget):
-		if listWidget.currentItem():
-			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_LIST +"}")
-		else:
-			listWidget.setStyleSheet("QListWidget {background: " + style.COLOR_ERROR_EMPTYLIST +"}")
-			return False
-		return True
-
-
 	def listClick_Left(self):
 		# Update Vars
 		self.updateVars()
@@ -300,7 +334,10 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		# Check Lists
 		check = True
 		for listWidget in [self.dropDownTaskNames, self.dropDownSeq, self.dropDownAssetNames]:
-			if not self.checkList(listWidget):
+			if listWidget.currentItem():
+				listWidget.setStyleSheet("QListWidget {background: white}")
+			else:
+				listWidget.setStyleSheet("QListWidget {background: " + COLOR_ERROR_EMPTYLIST +"}")
 				check = False
 
 		if check:
@@ -344,17 +381,14 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 
 	def listDoubleClick(self, item):
-		core.openScene_Maya(self.sceneFile)
+		core.openScene_Maya(self.sceneFilePath)
+
 
 
 	def listRezise(self, listWidget):
+		#listWidget.setMaximumHeight(listWidget.count() * 17 + 4)
 		listWidget.setMinimumHeight(listWidget.count() * 17 + 4)
 
-	def listHelper_AutoSelect(self):
-		for listWidget in [self.dropDownSeq, self.dropDownAssetNames, self.dropDownTaskNames, self.sceneList]:
-			if not listWidget.currentItem() and listWidget.count() == 1:
-				listWidget.setCurrentItem(listWidget.item(0))
-				self.checkList(listWidget)
 
 
 	def btnHelper_ClearLists(self):
@@ -403,9 +437,9 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.sceneType = "Assets"
 
 		# Update Button Colors
-		self.btnShots.setStyleSheet("QPushButton {background: " + style.COLOR_LIST +"}")
-		self.btnAssets.setStyleSheet("QPushButton {background: " + style.COLOR_SELECTION + "}")
-		self.btnAssets.origStyle = "QPushButton {background: " + style.COLOR_SELECTION + "}"
+		self.btnShots.setStyleSheet('QPushButton {background: white}')
+		self.btnAssets.setStyleSheet("QPushButton {background: " + COLOR_SELECTION + "}")
+		self.btnAssets.origStyle = "QPushButton {background: " + COLOR_SELECTION + "}"
 
 		self.labelName.setText("Asset:")
 		self.labelSeq.setText("Groups:")
@@ -416,7 +450,6 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.dropDownSeq.addItems(["Heros", "MusikKroeten"])
 
 		self.btnHelper_RestoreData()
-		self.listHelper_AutoSelect()
 
 		self.listRezise(self.dropDownTaskNames)
 		self.listRezise(self.dropDownSeq)
@@ -426,9 +459,9 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.sceneType = "Shots"
 
 		# Update Button Colors
-		self.btnAssets.setStyleSheet("QPushButton {background: " + style.COLOR_BACKGROUND +"}")
-		self.btnShots.setStyleSheet("QPushButton {background: " + style.COLOR_SELECTION + "}")
-		self.btnShots.origStyle = "QPushButton {background: " + style.COLOR_SELECTION + "}"
+		self.btnAssets.setStyleSheet('QPushButton {background: white}')
+		self.btnShots.setStyleSheet("QPushButton {background: " + COLOR_SELECTION + "}")
+		self.btnShots.origStyle = "QPushButton {background: " + COLOR_SELECTION + "}"
 
 		self.labelName.setText("Shots:")
 		self.labelSeq.setText("Sequence:")
@@ -440,7 +473,6 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.dropDownSeq.addItems(klShotNames.ShotSeq)
 
 		self.btnHelper_RestoreData()
-		self.listHelper_AutoSelect()
 
 		self.listRezise(self.dropDownTaskNames)
 		self.listRezise(self.dropDownSeq)
