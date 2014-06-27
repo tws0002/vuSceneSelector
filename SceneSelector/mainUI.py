@@ -67,23 +67,28 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		gridDropDowns.addWidget(self.labelName, 0, 1)
 		gridDropDowns.addWidget(self.labelTask, 0, 2)
 
+
+
+
 		# DropDown Type
-		self.dropDownType = QtGui.QComboBox()
+		self.dropDownType = QtGui.QListWidget()
 		self.dropDownType.addItems(TYPES)
-		self.connect(self.dropDownType, QtCore.SIGNAL("currentIndexChanged(QString)"), self.updateDropDowns)
+		#self.connect(self.dropDownType, QtCore.SIGNAL("currentIndexChanged(QString)"), self.updateDropDowns)
 		gridDropDowns.addWidget(self.dropDownType, 1, 0)
 
 		# DropDown AssetNames
-		self.dropDownAssetNames = QtGui.QComboBox()
+		self.dropDownAssetNames = QtGui.QListWidget()
 		self.dropDownAssetNames.addItems(klAssetNames.AssetNames)
-		self.connect(self.dropDownAssetNames, QtCore.SIGNAL("currentIndexChanged(QString)"), self.updateList)
+		#self.connect(self.dropDownAssetNames, QtCore.SIGNAL("currentIndexChanged(QString)"), self.updateList)
 		gridDropDowns.addWidget(self.dropDownAssetNames, 1, 1)
 
 		# DropDown TaskNames
-		self.dropDownTaskNames = QtGui.QComboBox()
+		self.dropDownTaskNames = QtGui.QListWidget()
 		self.dropDownTaskNames.addItems(klTaskNames.tasksNames3D_Names)
-		self.connect(self.dropDownTaskNames, QtCore.SIGNAL("currentIndexChanged(QString)"), self.updateList)
 		gridDropDowns.addWidget(self.dropDownTaskNames, 1, 2)
+
+
+
 
 
 		#########################
@@ -138,8 +143,11 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 
 	def updateVars(self):
-		self.assetName = str(self.dropDownAssetNames.currentText())
-		self.taskName = str(self.dropDownTaskNames.currentText())
+		#self.taskName = str(self.dropDownTaskNames.currentText())
+
+		self.assetName = "Kroete"	#str(self.dropDownAssetNames.currentItem().text())
+		self.taskName = "RIG"		#str(self.dropDownTaskNames.currentItem().text())
+
 
 		if not self.assetName or not self.taskName:
 			return
