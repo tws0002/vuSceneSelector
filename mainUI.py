@@ -6,7 +6,7 @@ sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules")
 import klAssetNames, klTaskNames, klShotNames
 
 sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/_DEV")
-from SceneSelector import core, utils, style
+from vuSceneSelector import core, utils, style
 
 
 
