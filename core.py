@@ -1,6 +1,6 @@
 import os
 import shutil
-from SceneSelector import utils
+from vuSceneSelector import utils
 
 
 ##############################################################################################
