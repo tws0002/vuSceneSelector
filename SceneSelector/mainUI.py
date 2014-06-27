@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtGui
-
+import math #for sqrt
 
 import sys
 sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules")
@@ -48,15 +48,12 @@ def list_SetSelection(listWidget, name, setColor=True):
 		return False
 
 
-
-
 class dragListWidget(QtGui.QListWidget):
 	def __init__(self, mainWindow, parent=None):
 		super(dragListWidget, self).__init__(parent)
 		self.setDragEnabled(True)
 
 		self.mainWindow = mainWindow;
-
 
 	def mouseMoveEvent(self, event):
 		print "MouseMove"
@@ -75,6 +72,7 @@ class dragListWidget(QtGui.QListWidget):
 		drag = QtGui.QDrag(self)
 		drag.setMimeData(data)
 		drag.exec_(QtCore.Qt.MoveAction)
+
 
 
 ##############################################################################################
@@ -118,6 +116,30 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#########################
 		header = QtGui.QLabel()
 		header.setPixmap(QtGui.QPixmap(style.HEADER_IMG))
+
+		#########################
+		#						#
+		#         Eyes          #
+		#						#
+		#########################
+
+		# Scene and View
+		view = QtGui.QGraphicsView()
+		view.setStyleSheet("background: transparent");
+		view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+		view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+		scene = QtGui.QGraphicsScene(0, 0, 413, 143)
+		view.setScene(scene)
+
+		# Eyes
+		brush = QtGui.QBrush(QtGui.QColor(31,30,12))
+		pen = QtGui.QPen()
+		pen.setStyle(QtCore.Qt.NoPen)
+		r = 3
+		self.eyeLeft = scene.addEllipse(-r, -r, 2*r, 2*r ,pen, brush)
+		self.eyeRight = scene.addEllipse(-r, -r, 2*r, 2*r ,pen, brush)
+
 
 
 		#########################
@@ -215,6 +237,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#########################
 		main_grid = QtGui.QGridLayout()
 		main_grid.addWidget(header, 0, 0)
+		main_grid.addWidget(view, 0, 0)
 
 		main_grid.addLayout(gridLists, 1, 0)
 		main_grid.addWidget(self.labelScenes, 2, 0)
@@ -228,10 +251,17 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 		QtGui.QMainWindow.__init__(self, parent)
 		self.setFixedWidth(430)
-		self.setWindowTitle("Kroetenlied - SceneSelector v010")
+		self.setWindowTitle("Kroetenlied - SceneSelector v011")
 		self.setCentralWidget(mainWidget)
-
 		self.setStyleSheet(style.STYLE)
+
+		# Set MouseTracking for Eyes:
+		for widget in [self, mainWidget,
+						self.labelScenes, self.labelSeq, self.labelName, self.labelTask, self.labelType,
+						self.listType, self.listSeq, self.listTaskNames, self.listAssetNames,
+						grpDetails, self.detailsSize, self.detailsTime]:
+			widget.setMouseTracking(True)
+
 
 		if core.loadData(self):
 			self.loadValues()
@@ -434,6 +464,32 @@ class vuPipelineOverView(QtGui.QMainWindow):
 				selName = str(listItem.text())
 
 				self.updateList_ItemTextColor(listItem, selName, selTask)
+
+
+
+
+##############################################################################################
+#
+#
+#		Mouse Move
+#
+
+	def mouseMoveEvent(self, event):
+		# Cal Position
+		x = event.x() - 344
+		y = event.y() - 57
+		l = math.sqrt(x*x + y*y)
+		x = (x/l * 5) + 344
+		y = (y/l * 5) + 57
+		self.eyeLeft.setPos(x,y)
+
+		x = event.x() - 398
+		y = event.y() - 54
+		l = math.sqrt(x*x + y*y)
+		x = (x/l * 6) + 398
+		y = (y/l * 5) + 54
+		self.eyeRight.setPos(x,y)
+
 
 
 ##############################################################################################
