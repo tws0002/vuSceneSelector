@@ -73,7 +73,6 @@ def light():
 			"COLOR_LIST": COLOR_LIST
 			}
 
-
 def dark():
 	global COLOR_SELECTION; 	COLOR_SELECTION = "#4d805e"
 	global COLOR_HOVER; 		COLOR_HOVER = "#4d805e"
