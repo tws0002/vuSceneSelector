@@ -4,7 +4,7 @@ PROJECT_NAME = "Kroetenlied"
 
 # Folders
 projectRoot = "//bigfoot/kroetenlied"
-folderPipeline = projectRoot + "/060_Software/vuPipeline"
+folderPipeline = projectRoot + "/060_Software/Kroetenlied_Pipeline"
 
 folder3D  = projectRoot + "/045_Production_Film/3D"
 FOLDER_ASSETS = folder3D + "/ASSETS/Charakter"
