@@ -17,7 +17,7 @@ from settings import project, style
 #
 
 VERSION_MAJOR = "01"
-VERSION_MINOR = "02"
+VERSION_MINOR = "03"
 TYPES = ["Assets", "Shots"]
 style.setStyle(project.UI_STYLE)
 

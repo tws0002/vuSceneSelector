@@ -8,7 +8,9 @@ import getpass
 #		Settings
 #
 
-LOG_FILE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/logFiles/logSceneSelector"
+
+from settings import project
+LOG_FILE = project.folderPipeline + "/" + project.PROJECT_NAME + "/logFiles/logSceneSelector"
 
 
 def timeStamp_Format(time):

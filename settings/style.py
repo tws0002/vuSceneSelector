@@ -53,9 +53,12 @@ QListWidget:item:selected:!disabled {
 
 def setStyle(style):
 	# GLOBAL
+	global COLOR_HOVER
+	global COLOR_ERROR_EMPTYLIST
+
+	# STYLE
 	global COLOR_BACKGROUND
 	global COLOR_SELECTION
-	global COLOR_HOVER
 	global COLOR_TEXT
 	global COLOR_BORDER
 	global COLOR_LIST
