@@ -1,20 +1,9 @@
 import os
 import shutil
-from vuSceneSelector import utils
+import utils
+from settings import project
 
 
-##############################################################################################
-#
-#
-#		Settings
-#
-
-PROJECT_ROOT = "//bigfoot/kroetenlied"
-PIPELINE_FOLDER = PROJECT_ROOT + "/060_Software/vuPipeline"
-
-MAYA_BATCH = PIPELINE_FOLDER + "/startMaya.bat"
-PATH_SETTINGS_USER = PIPELINE_FOLDER + "/PythonModules/vuSceneSelector/userSettings/" + utils.getArtist(short=False)
-EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/vuSceneSelector/emptyScene.mb"
 
 def checkFiles(path):
 	if not os.path.exists(path):
@@ -43,7 +32,7 @@ def findFiles(path):
 
 def openScene_Maya(path):
 	utils.log("OpenMaya: " + path)
-	os.system(MAYA_BATCH + " " + path)
+	os.system(project.MAYA_BATCH + " " + path)
 
 
 def listCtxt_ExploreFile(path):
@@ -57,7 +46,7 @@ def listCtxt_ExploreFolder(path):
 
 
 def listCtxt_CreateNewFile(path):
-	shutil.copy2(EMPTY_SCENE, path)
+	shutil.copy2(project.EMPTY_SCENE, path)
 
 
 
@@ -70,23 +59,19 @@ def storeData(values):
 	# Make it more UserFriendly
 	content = str(values).replace(",", ",\n")
 
-	f = open(PATH_SETTINGS_USER, 'w')
+	f = open(project.USER_SETTINGS, 'w')
 	f.writelines(content)
 	f.close()
 
 
 def loadData(view, rtnDict=False):
-	if not os.path.isfile(PATH_SETTINGS_USER):
+	if not os.path.isfile(project.USER_SETTINGS):
 		return False
 
-	content = eval(open(PATH_SETTINGS_USER, 'r').read())
+	content = eval(open(project.USER_SETTINGS, 'r').read())
 
 	if rtnDict:
 		return content
 	else:
 		view.values = content
 		return True
-
-
-
-

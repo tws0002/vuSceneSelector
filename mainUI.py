@@ -1,14 +1,14 @@
 from PyQt4 import QtCore, QtGui
 import math #for sqrt
-
+import os # for getcwd()
 import sys
-sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules")
-import klAssetNames, klTaskNames, klShotNames
-
-sys.path.append("//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/_DEV")
-from vuSceneSelector import core, utils, style
 
 
+WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(WORKING_DIR)
+
+import core, utils
+from settings import project, style
 
 ##############################################################################################
 #
@@ -16,9 +16,11 @@ from vuSceneSelector import core, utils, style
 #		Settings
 #
 
-ROOT = "//bigfoot/kroetenlied/045_Production_Film/3D"
+VERSION_MAJOR = "01"
+VERSION_MINOR = "02"
 TYPES = ["Assets", "Shots"]
-EMPTY_SCENE = "//bigfoot/kroetenlied/060_Software/vuPipeline/PythonModules/vuSceneSelector/emptyScene.mb"
+style.setStyle(project.UI_STYLE)
+
 
 ##############################################################################################
 #
@@ -56,8 +58,6 @@ class dragListWidget(QtGui.QListWidget):
 		self.mainWindow = mainWindow;
 
 	def mouseMoveEvent(self, event):
-		print "MouseMove"
-
 		# Update Data
 		sceneFile = self.mainWindow.sceneFolder + "\\" + str(self.currentItem().text())
 		self.mainWindow.values["OpenScene"] = sceneFile
@@ -65,7 +65,7 @@ class dragListWidget(QtGui.QListWidget):
 
 		# Set Data
 		data = QtCore.QMimeData()
-		url = QtCore.QUrl.fromLocalFile(EMPTY_SCENE)
+		url = QtCore.QUrl.fromLocalFile(project.EMPTY_SCENE)
 		data.setUrls([url])
 
 		# Set Drag
@@ -82,7 +82,6 @@ class dragListWidget(QtGui.QListWidget):
 #
 class vuPipelineOverView(QtGui.QMainWindow):
 	def __init__(self, parent=None):
-		style.dark()
 
 		# Vars
 		self.sceneFolder = ""	# Current Folder
@@ -115,7 +114,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		#						#
 		#########################
 		header = QtGui.QLabel()
-		header.setPixmap(QtGui.QPixmap(style.HEADER_IMG))
+		header.setPixmap(QtGui.QPixmap(project.HEADER_IMG))
 
 		#########################
 		#						#
@@ -251,7 +250,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 		QtGui.QMainWindow.__init__(self, parent)
 		self.setFixedWidth(430)
-		self.setWindowTitle("Kroetenlied - SceneSelector v011")
+		self.setWindowTitle(project.PROJECT_NAME + " - SceneSelector v" + VERSION_MAJOR + "." + VERSION_MINOR)
 		self.setCentralWidget(mainWidget)
 		self.setStyleSheet(style.STYLE)
 
@@ -370,15 +369,15 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 		# Seq + Task = Type Dependent:
 		if selType  == TYPES[0]:
-			self.listSeq.addItems(["Heros", "MusikKroeten"])
-			self.listTaskNames.addItems(klTaskNames.tasksNames3D_Names)
+			self.listSeq.addItems(project.ASSET_GROUPS)
+			self.listTaskNames.addItems(project.Tasks.CharakterNames)
 
 			selGroup = self.values["AssetGroup"]
 			selTask = self.values["AssetTask"]
 
 		else:
-			self.listSeq.addItems(klShotNames.ShotSeq)
-			self.listTaskNames.addItems(klTaskNames.tasksNamesShots_Names)
+			self.listSeq.addItems(project.Shots.Seq)
+			self.listTaskNames.addItems(project.Tasks.ShotNames)
 
 			selGroup = self.values["ShotSeq"]
 			selTask = self.values["ShotTask"]
@@ -389,10 +388,10 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 		# Assets + Shots = Seq Dependent
 		if selType  == TYPES[0]:
-			names = [name for name in klAssetNames.AssetNames if klAssetNames.getGrp(name) == selGroup]
+			names = [name for name in project.Assets.Names if project.Assets.getGrp(name) == selGroup]
 			selName = self.values["AssetName"]
 		elif selType == TYPES[1]:
-			names = [name for name in klShotNames.ShotNamesCompl if klShotNames.getSeq(name) == selGroup]
+			names = [name for name in project.Shots.NamesCompl if project.Shots.getSeq(name) == selGroup]
 			selName = self.values["ShotName"]
 
 		self.listAssetNames.addItems(names)
@@ -405,15 +404,15 @@ class vuPipelineOverView(QtGui.QMainWindow):
 			return
 
 		if selType  == TYPES[0]:
-			self.sceneFolder = ROOT + "\\ASSETS\\Charakter\\"
-			self.sceneFolder += klAssetNames.getNum(selName) + "_" + selName + "\\"
-			self.sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + klAssetNames.getCode(selName) + "_" + selTask
+			self.sceneFolder = project.FOLDER_ASSETS + "/"
+			self.sceneFolder += project.Assets.getNum(selName) + "_" + selName + "\\"
+			self.sceneFolder += project.Tasks.getTaskNum(selTask) + "_" + project.Assets.getCode(selName) + "_" + selTask
 			selScene = self.values["AssetScene"]
 
 		elif selType == TYPES[1]:
-			self.sceneFolder = ROOT + "\\SHOTS\\"
-			self.sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + selTask + "\\"
-			self.sceneFolder += klShotNames.getCode(selName) + "_" + selTask + "_" + klShotNames.getName(selName)
+			self.sceneFolder = project.FOLDER_SHOTS + "/"
+			self.sceneFolder += project.Tasks.getTaskNum(selTask) + "_" + selTask + "\\"
+			self.sceneFolder += project.Shots.getCode(selName) + "_" + selTask + "_" + project.Shots.getName(selName)
 			selScene = self.values["ShotScene"]
 
 		if self.sceneFolder:
@@ -432,14 +431,14 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 	def updateList_ItemTextColor(self, listItem, selName, selTask):
 		if self.selType  == TYPES[0]:
-			sceneFolder = ROOT + "\\ASSETS\\Charakter\\"
-			sceneFolder += klAssetNames.getNum(selName) + "_" + selName + "\\"
-			sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + klAssetNames.getCode(selName) + "_" + selTask
+			sceneFolder = project.FOLDER_ASSETS + "/"
+			sceneFolder += project.Assets.getNum(selName) + "_" + selName + "\\"
+			sceneFolder += project.Tasks.getTaskNum(selTask) + "_" + project.Assets.getCode(selName) + "_" + selTask
 
 		elif self.selType == TYPES[1]:
-			sceneFolder = ROOT + "\\SHOTS\\"
-			sceneFolder += klTaskNames.getTaskNum(selTask) + "_" + selTask + "\\"
-			sceneFolder += klShotNames.getCode(selName) + "_" + selTask + "_" + klShotNames.getName(selName)
+			sceneFolder = project.FOLDER_SHOTS + "/"
+			sceneFolder += project.Tasks.getTaskNum(selTask) + "_" + selTask + "\\"
+			sceneFolder += project.Shots.getCode(selName) + "_" + selTask + "_" + project.Shots.getName(selName)
 
 		if not core.checkFiles(sceneFolder):
 			listItem.setTextColor(QtGui.QColor(128,128,128))
@@ -578,14 +577,3 @@ if __name__ == "__main__":
 	form = vuPipelineOverView()
 	form.show()
 	app.exec_()
-
-
-
-"""
-	def listHelper_AutoSelect(self):
-		return
-		for listWidget in [self.listSeq, self.listAssetNames, self.listTaskNames, self.sceneList]:
-			if not listWidget.currentItem() and listWidget.count() == 1:
-				listWidget.setCurrentItem(listWidget.item(0))
-				self.checkList(listWidget)
-"""
