@@ -11,5 +11,6 @@ $RECYCLE.BIN/
 
 
 *.pyc
-logFiles
-userSettings
+userSettings*
+settings/project.py
+vuPipeline_SceneSelector.bat

@@ -17,8 +17,6 @@ sys.path.append(folderPipeline)
 import Kroetenlied.klAssets as Assets
 import Kroetenlied.klTasks  as Tasks
 import Kroetenlied.klShots  as Shots
-ASSET_GROUPS = ["Heros", "MusikKroeten"]
-
 
 
 UI_STYLE = "dark"		# Avalible: [dark, light]

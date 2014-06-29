@@ -369,7 +369,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 		# Seq + Task = Type Dependent:
 		if selType  == TYPES[0]:
-			self.listSeq.addItems(project.ASSET_GROUPS)
+			self.listSeq.addItems(project.Assets.Groups)
 			self.listTaskNames.addItems(project.Tasks.CharakterNames)
 
 			selGroup = self.values["AssetGroup"]
