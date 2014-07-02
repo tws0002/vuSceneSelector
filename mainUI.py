@@ -17,7 +17,7 @@ from settings import project, style
 #
 
 VERSION_MAJOR = "01"
-VERSION_MINOR = "03"
+VERSION_MINOR = "04"
 TYPES = ["Assets", "Shots"]
 style.setStyle(project.UI_STYLE)
 
@@ -138,7 +138,9 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		r = 3
 		self.eyeLeft = scene.addEllipse(-r, -r, 2*r, 2*r ,pen, brush)
 		self.eyeRight = scene.addEllipse(-r, -r, 2*r, 2*r ,pen, brush)
-
+		headerMouseHandler = QtGui.QLabel()
+		headerMouseHandler.setFixedSize(413,143)
+		headerMouseHandler.setStyleSheet("background: transparent");
 
 
 		#########################
@@ -237,6 +239,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		main_grid = QtGui.QGridLayout()
 		main_grid.addWidget(header, 0, 0)
 		main_grid.addWidget(view, 0, 0)
+		main_grid.addWidget(headerMouseHandler, 0, 0)
 
 		main_grid.addLayout(gridLists, 1, 0)
 		main_grid.addWidget(self.labelScenes, 2, 0)
@@ -255,11 +258,23 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.setStyleSheet(style.STYLE)
 
 		# Set MouseTracking for Eyes:
-		for widget in [self, mainWidget,
-						self.labelScenes, self.labelSeq, self.labelName, self.labelTask, self.labelType,
-						self.listType, self.listSeq, self.listTaskNames, self.listAssetNames,
-						grpDetails, self.detailsSize, self.detailsTime]:
-			widget.setMouseTracking(True)
+		self.setMouseTracking(True)
+		mainWidget.setMouseTracking(True)
+		headerMouseHandler.setMouseTracking(True)
+		self.labelScenes.setMouseTracking(True)
+		self.labelSeq.setMouseTracking(True)
+		self.labelName.setMouseTracking(True)
+		self.labelTask.setMouseTracking(True)
+		self.labelType.setMouseTracking(True)
+		self.listType.setMouseTracking(True)
+		self.listSeq.setMouseTracking(True)
+		self.listTaskNames.setMouseTracking(True)
+		self.listAssetNames.setMouseTracking(True)
+		grpDetails.setMouseTracking(True)
+		self.detailsSize.setMouseTracking(True)
+		self.detailsTime.setMouseTracking(True)
+
+
 
 
 		if core.loadData(self):
@@ -475,17 +490,17 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 	def mouseMoveEvent(self, event):
 		# Cal Position
-		x = event.x() - 344
+		x = event.x() - 345
 		y = event.y() - 57
 		l = math.sqrt(x*x + y*y)
-		x = (x/l * 5) + 344
+		x = (x/l * 7) + 345
 		y = (y/l * 5) + 57
 		self.eyeLeft.setPos(x,y)
 
-		x = event.x() - 398
+		x = event.x() - 399
 		y = event.y() - 54
 		l = math.sqrt(x*x + y*y)
-		x = (x/l * 6) + 398
+		x = (x/l * 7) + 399
 		y = (y/l * 5) + 54
 		self.eyeRight.setPos(x,y)
 
