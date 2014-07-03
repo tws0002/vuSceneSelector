@@ -17,7 +17,7 @@ from settings import project, style
 #
 
 VERSION_MAJOR = "01"
-VERSION_MINOR = "04"
+VERSION_MINOR = "05"
 TYPES = ["Assets", "Shots"]
 style.setStyle(project.UI_STYLE)
 
@@ -171,8 +171,8 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		self.connect(self.listTaskNames, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Task)
 		self.connect(self.listAssetNames, QtCore.SIGNAL("itemClicked(QListWidgetItem*)"), self.mouseClickLeft_List_Asset)
 
-		widthSmall = 82
-		widthWide = 150
+		widthSmall = 87
+		widthWide = 135
 
 		listRezise(self.listType, 172-(17*3), widthSmall)
 		listRezise(self.listSeq, 172-(17*3), widthSmall)
@@ -385,10 +385,11 @@ class vuPipelineOverView(QtGui.QMainWindow):
 		# Seq + Task = Type Dependent:
 		if selType  == TYPES[0]:
 			self.listSeq.addItems(project.Assets.Groups)
-			self.listTaskNames.addItems(project.Tasks.CharakterNames)
 
 			selGroup = self.values["AssetGroup"]
 			selTask = self.values["AssetTask"]
+			self.listTaskNames.addItems(project.Assets.getTasks(selGroup))
+
 
 		else:
 			self.listSeq.addItems(project.Shots.Seq)
@@ -489,20 +490,22 @@ class vuPipelineOverView(QtGui.QMainWindow):
 #
 
 	def mouseMoveEvent(self, event):
-		# Cal Position
-		x = event.x() - 345
-		y = event.y() - 57
-		l = math.sqrt(x*x + y*y)
-		x = (x/l * 7) + 345
-		y = (y/l * 5) + 57
-		self.eyeLeft.setPos(x,y)
+		if QtGui.qApp.mouseButtons() != QtCore.Qt.RightButton:
+			# Cal Position
+			x = event.x() - 345
+			y = event.y() - 57
+			l = math.sqrt(x*x + y*y)
+			x = (x/l * 7) + 345
+			y = (y/l * 5) + 57
+			self.eyeLeft.setPos(x,y)
 
-		x = event.x() - 399
-		y = event.y() - 54
-		l = math.sqrt(x*x + y*y)
-		x = (x/l * 7) + 399
-		y = (y/l * 5) + 54
-		self.eyeRight.setPos(x,y)
+		if QtGui.qApp.mouseButtons() != QtCore.Qt.LeftButton:
+			x = event.x() - 399
+			y = event.y() - 54
+			l = math.sqrt(x*x + y*y)
+			x = (x/l * 7) + 399
+			y = (y/l * 5) + 54
+			self.eyeRight.setPos(x,y)
 
 
 
