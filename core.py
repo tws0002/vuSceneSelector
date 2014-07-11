@@ -30,9 +30,15 @@ def findFiles(path):
 	return sorted(results, reverse=True)
 
 
-def openScene_Maya(path):
-	utils.log("OpenMaya: " + path)
-	os.system(project.MAYA_BATCH + " " + path)
+def openScene(path):
+	"""	This will start the Appliaction and opens the Scene	"""
+	ext = os.path.splitext(path)[1]
+
+	if ext == ".nk":
+		os.system(project.NUKE_BATCH + " " + path)
+	elif ext == ".ma" or ext == ".mb":
+		os.system(project.MAYA_BATCH + " " + path)
+
 
 
 def listCtxt_ExploreFile(path):
@@ -47,7 +53,6 @@ def listCtxt_ExploreFolder(path):
 
 def listCtxt_CreateNewFile(path):
 	shutil.copy2(project.EMPTY_SCENE, path)
-
 
 
 #########################

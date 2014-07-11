@@ -17,7 +17,7 @@ from settings import project, style
 #
 
 VERSION_MAJOR = "01"
-VERSION_MINOR = "05"
+VERSION_MINOR = "06"
 TYPES = ["Assets", "Shots"]
 style.setStyle(project.UI_STYLE)
 
@@ -63,9 +63,17 @@ class dragListWidget(QtGui.QListWidget):
 		self.mainWindow.values["OpenScene"] = sceneFile
 		core.storeData(self.mainWindow.values)
 
-		# Set Data
+
+		# PrePare MineData
 		data = QtCore.QMimeData()
-		url = QtCore.QUrl.fromLocalFile(project.EMPTY_SCENE)
+
+		ext = os.path.splitext(sceneFile)[1]
+		if ext == ".nk":
+			url = QtCore.QUrl.fromLocalFile(sceneFile)
+		elif ext == ".ma" or ext == ".mb":
+			url = QtCore.QUrl.fromLocalFile(project.EMPTY_SCENE)
+
+		# Set Data
 		data.setUrls([url])
 
 		# Set Drag
@@ -578,7 +586,7 @@ class vuPipelineOverView(QtGui.QMainWindow):
 
 
 	def mouseClickDouble_List_Scene(self, item):
-		core.openScene_Maya(self.sceneFile)
+		core.openScene(self.sceneFile)
 
 
 ##############################################################################################
