@@ -47,11 +47,6 @@ def watch():
 		name, attr, value = pickle.load(open( TASK_FOLDER + "/" + fileName, "r" ))
 		print fileName, name, attr, value
 
-
-		# DEBUG
-		if not name.startswith("Z"):
-			return
-
 		if attr.endswith("_Status"):
 			task = attr.split("_")[0]
 			syncModule.setStatus(name, task, value)
