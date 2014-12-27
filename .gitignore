@@ -9,8 +9,4 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-
 *.pyc
-userSettings*
-settings/project.py
-vuPipeline_SceneSelector.bat

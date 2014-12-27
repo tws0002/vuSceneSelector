@@ -1,5 +1,5 @@
 import os
-splitterIMG = os.path.dirname(__file__) + "/graphics/UiElements/"
+splitterIMG = os.path.dirname(__file__) + "/graphics/elements/"
 
 # SETTINGS
 from core import Settings

@@ -1,3 +1,5 @@
+#!/usr/bin/env python2.7
+
 from PyQt4 import QtCore, QtGui
 import os
 import sys
@@ -10,12 +12,13 @@ sys.path.append(WORKING_DIR)
 
 
 # Settings
-if __name__ == '__main__':
-	projectRoot = 'V:' if sys.platform.startswith("win") else '/ln/Jagon'
-	settings_Folder = projectRoot + "/090_Software/Intern/vuPipelineOverview_Settings/"
+SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
+if not SETTINGS_PROJECT:
+	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
+	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
 	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
-else:
-	SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
+
+
 
 
 from core import Settings
@@ -23,13 +26,11 @@ SETTINGS = Settings.SETTINGS
 SETTINGS.load(SETTINGS_PROJECT, "r")
 SETTINGS.load(SETTINGS["Settings_User"])
 
-
 # Import Modules
 from core import Index
 from sync import syncTasks
-from ui import ListTemplate, ListsAssets, ListScenes, ListTasks
-import style
-from AdminUtils import adminMainUI
+from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks
+from adminUtils import adminMainUI
 
 if SETTINGS["projectName"] == "Jagon":
 	from ui import Header_Jagon as Header
@@ -49,7 +50,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "2.1"
+VERSION_MINOR = "2.2"
 DEBUG = os.getenv("DEBUG")
 
 

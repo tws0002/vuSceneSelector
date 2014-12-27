@@ -8,7 +8,7 @@ rootDir = os.sep.join(__file__.split(os.sep)[:-2])
 sys.path.append(rootDir)
 
 
-from AdminUtils import vuFolderCreator
+from adminUtils import vuFolderCreator
 from core import Settings, Index
 
 SETTINGS = Settings.SETTINGS

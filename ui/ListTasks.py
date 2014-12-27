@@ -4,18 +4,20 @@ import scandir
 
 if __name__ == '__main__':
 	import sys
-	sys.path.append("/ln/Dev/017_KroetenliedPipeline/v04/v04_12")
+	rootDir = os.sep.join(__file__.split(os.sep)[:-2])
+	sys.path.append(rootDir)
 
 # Import Modules
 from core import Settings, Index
-from ui import ListTemplate
-import style
+from ui import style, ListTemplate
 SETTINGS = Settings.SETTINGS
 
 
 FILTER_EXTENSIONS = (".exr", ".jpg", ".tif")
 FILTER_FOLDER = ["asses", "logs", "main_logs"]
 RV_EXE = "C:\\Program Files\\Tweak\\RV\\bin\\rv.exe"
+
+FOLDER_ICONS = os.path.dirname(__file__) + "/graphics/icons"
 
 
 #############################
@@ -40,7 +42,7 @@ def addAction_OpenRV(menu, name, path):
 		#print "Open RV" + path
 		os.system('start "" "' + RV_EXE + '" ' + path)
 
-	icon = createIcon(SETTINGS["GRAPHICS"] + "/Icons/icon_rvPlayer.png")
+	icon = createIcon(FOLDER_ICONS + "/icon_rvPlayer.png")
 
 	action = menu.addAction(icon, name)
 	action.setIconVisibleInMenu(True)
@@ -51,7 +53,7 @@ def addAction_OpenFolder(submenu, fileName, filePath):
 	def clicked():
 		os.system("explorer /e /select, " + filePath.replace("/", "\\"))
 
-	icon = createIcon(SETTINGS["GRAPHICS"] + "/Icons/icon_folder.png")
+	icon = createIcon(FOLDER_ICONS + "/icon_folder.png")
 	action = submenu.addAction(icon, fileName)	#"Open Folder: " +
 	action.setIconVisibleInMenu(True)
 	action.connect(action, QtCore.SIGNAL("triggered()"), clicked)

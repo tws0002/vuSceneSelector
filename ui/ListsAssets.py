@@ -3,12 +3,11 @@ import os, sys
 
 # Import Modules
 from core import Settings, Index
-from ui import ListTemplate
+from ui import style, ListTemplate
 from sync import syncTasks
-import style
 SETTINGS = Settings.SETTINGS
 
-FOLDER_ICONS = os.path.dirname(__file__)[:-3] + "/graphics/Icons"
+FOLDER_ICONS = os.path.dirname(__file__) + "/graphics/icons"
 
 
 

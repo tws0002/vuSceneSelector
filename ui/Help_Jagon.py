@@ -5,7 +5,7 @@ import webbrowser
 
 # Import Modules
 #from vuPipelineOverview_Settings import vuSceneSelectorProjectSettings as project
-import style
+from ui import style
 
 
 

@@ -5,10 +5,10 @@ import datetime
 
 # Import Modules
 from core import Files, Settings
-from ui import ListTemplate
-import style
+from ui import style, ListTemplate
 SETTINGS = Settings.SETTINGS
 
+FOLDER_ICONS = os.path.dirname(__file__) + "/graphics/icons"
 
 #################
 #
@@ -44,10 +44,10 @@ def createIcon(path):
 
 
 def iconRefresh():
-	return createIcon(SETTINGS["GRAPHICS"] + "/Icons/icon_refresh.png")
+	return createIcon(FOLDER_ICONS + "/icon_refresh.png")
 
 def iconOpenFolder():
-	return createIcon(SETTINGS["GRAPHICS"] + "/Icons/icon_folder.png")
+	return createIcon(FOLDER_ICONS + "/icon_folder.png")
 
 
 

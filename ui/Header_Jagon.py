@@ -5,7 +5,7 @@ import ftplib
 
 # Import Modules
 from core import Settings, Index
-import style
+from ui import style
 SETTINGS = Settings.SETTINGS
 
 
