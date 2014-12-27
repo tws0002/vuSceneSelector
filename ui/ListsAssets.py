@@ -7,7 +7,7 @@ from ui import style, ListTemplate
 from sync import syncTasks
 SETTINGS = Settings.SETTINGS
 
-FOLDER_ICONS = os.path.dirname(__file__) + "/graphics/icons"
+FOLDER_ICONS = os.path.dirname(__file__).replace(os.sep, "/") + "/graphics/icons"
 
 
 
@@ -381,7 +381,6 @@ class TableAssetsHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 	def setType(self, selType):
 		widget = QtGui.QLabel(selType)
-
 
 		# Label
 		self.setCellWidget(0, 0, widget)

@@ -8,7 +8,7 @@ from core import Files, Settings
 from ui import style, ListTemplate
 SETTINGS = Settings.SETTINGS
 
-FOLDER_ICONS = os.path.dirname(__file__) + "/graphics/icons"
+FOLDER_ICONS = os.path.dirname(__file__).replace(os.sep, "/") + "/graphics/icons"
 
 #################
 #

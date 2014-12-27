@@ -17,7 +17,7 @@ FILTER_EXTENSIONS = (".exr", ".jpg", ".tif")
 FILTER_FOLDER = ["asses", "logs", "main_logs"]
 RV_EXE = "C:\\Program Files\\Tweak\\RV\\bin\\rv.exe"
 
-FOLDER_ICONS = os.path.dirname(__file__) + "/graphics/icons"
+FOLDER_ICONS = os.path.dirname(__file__).replace(os.sep, "/") + "/graphics/icons"
 
 
 #############################

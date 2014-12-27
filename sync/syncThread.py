@@ -10,9 +10,11 @@ sys.path.append(rootDir)
 
 
 # Settings
-projectRoot = 'V:' if sys.platform.startswith("win") else '/ln/Jagon'
-settings_Folder = projectRoot + "/090_Software/Intern/vuPipelineOverview_Settings/"
-SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
+if not SETTINGS_PROJECT:
+	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
+	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
+	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
 
 
 

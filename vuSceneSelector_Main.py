@@ -511,7 +511,7 @@ class vuSceneSelector(QtGui.QWidget):
 			content += "self.selName: " + str(self.selName) + "\n"
 			content += "self.selScene: " + str(self.selScene) + "\n"
 			content += "self.sceneFolder: " + str(self.sceneFolder) + "\n"
-			content += "ToDo: " + str(value) + "\n"
+			content += "ToDo: " + unicode(value) + "\n"
 
 
 		self.toDo.setText(content)
@@ -520,6 +520,9 @@ class vuSceneSelector(QtGui.QWidget):
 
 
 	def updateThread(self):
+		if self.selType in ["", None]:
+			return False
+
 		self.interactive = False
 		self.updateAssets()
 		self.updateToDo()

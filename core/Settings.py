@@ -1,4 +1,5 @@
 import os
+import shutil
 import re
 import imp
 
@@ -70,21 +71,27 @@ class SettingsFile(object):
 		out.close()
 
 
+DEFAULT_PROJECT = os.path.dirname(__file__) + "/SettingsDefault_Project.py"
+DEFAULT_USER 	= os.path.dirname(__file__) + "/SettingsDefault_User.py"
+
+
 
 class Settings(object):
 	def __init__(self):
 		self.files = []
 
 		# Load Defaults
-		defaults = os.path.dirname(__file__) + "/SettingsDefault.py"
-		self.load(defaults, "r")
+		self.load(DEFAULT_PROJECT, "r")
+		self.load(DEFAULT_USER, "r")
 
 
 	def load(self, filename, mode="rw"):
 		"""Load the Settings"""
 		if not os.path.exists(filename):
 			print "[SETTINGS ERROR] File gibts net!", filename
-			return False
+			if not "w" in mode:
+				return False
+			shutil.copy(DEFAULT_USER, filename)
 		settingsFile = SettingsFile(filename, mode)
 		self.files = [settingsFile] + self.files # Append at the Front
 
