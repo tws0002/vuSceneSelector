@@ -8,11 +8,13 @@
 selType = ''
 selArtist = ''
 
+ShotsFilterType = ''
 ShotsGroup = ''
 ShotsName = ''
 ShotsTask = ''
 ShotsScene = ''
 
+AssetsFilterType = ''
 AssetsGroup = ''
 AssetsName = ''
 AssetsTask = ''

@@ -133,29 +133,6 @@ class TableTemplate(QtGui.QTableWidget):
 
 
 
-
-class ScrollIndicator(QtGui.QWidget):
-	"""docstring for ScrollIndicator"""
-	def __init__(self):
-		super(ScrollIndicator, self).__init__()
-
-		self.label = QtGui.QLabel("...")
-		self.label.setAlignment(QtCore.Qt.AlignCenter)
-		#self.label.setStyleSheet("background-color: black")
-		#self.label.setStyleSheet("opacity: 0.2")
-		self.label.setStyleSheet("background-color: rgba(0, 0, 0, 20%)")
-
-		# Layout
-		self.layout = QtGui.QVBoxLayout()
-		self.layout.setMargin(0)
-		self.setLayout(self.layout)
-		#self.layout.addStretch()
-		self.layout.addWidget(self.label)
-
-
-
-
-
 class HeaderItemSort(QtGui.QLabel):
 	"""QLabel, with Sorting Indicator"""
 	def __init__(self, text):

@@ -174,11 +174,10 @@ class TableAssetsIcon(QtGui.QLabel):
 
 
 class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
-	def __init__(self, window, scrollIndicator):
+	def __init__(self, window):
 		super(TableAssets, self).__init__(window)
 
 		self.parent = window
-		self.scrollIndicator = scrollIndicator
 		self.names = []
 
 		# Selection
@@ -193,7 +192,7 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		createTaskIcons()
 
 		#self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-		self.verticalScrollBar().setStyleSheet("width: 0px")
+		#self.verticalScrollBar().setStyleSheet("width: 0px")
 
 		self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 		self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -202,15 +201,16 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 	def resizeEvent(self, event):
 		super(TableAssets, self).resizeEvent(event)
+		self.emit(QtCore.SIGNAL("resizeSignal()"))
 
+	"""
 		if self.scrollIndicator:
 			self.scrollIndicator.setVisible(self.verticalScrollBarVisible)
-		"""
 		if self.verticalScrollBarVisible:
 			self.setStyleSheet("background-color: red")
 		else:
 			self.setStyleSheet("background-color: green")
-		"""
+	"""
 
 	def FavoriteSet(self, item, value):
 		if value:
@@ -281,7 +281,6 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 			return
 		names = Index.getNames(self.selType)
 
-
 		# Filter Names
 		if self.selType == "Shots":
 			names = [name for name in names if "VFX" in Index.getValue(name, "Tags")]
@@ -317,29 +316,6 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		self.selGroup = selGroup
 
 		self.update()
-
-
-		"""
-
-
-
-		# Get Items
-		if selGrp == "-- All --":
-			names = Index.getNames(selType, Filter=self.Filter())
-		elif selGrp == "-- Favorites --":
-			
-		else:
-			names = Index.getNames(selType, selGrp, self.Filter())
-
-
-		# Filter by Artist?
-		if selArtist != "-- All --":
-			names = [name for name in names if selArtist in Index.getValue(name, "*_Artist")]
-
-		self.names = names
-		"""
-
-
 
 
 	######################
@@ -478,6 +454,18 @@ class TableAssetsHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 		self.cellClicked.connect(self.cellClicked_User)
 
+		# ScrolBar Handling
+		self.connect(self.table, QtCore.SIGNAL("resizeSignal()"), self.resize)
+		self.verticalScrollBar().setVisible(False)
+
+
+
+	def resize(self):
+		if self.table.verticalScrollBarVisible:
+			self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+		else:
+			self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
 
 	def cellClicked_User(self, row, col):
 		if col:
@@ -520,9 +508,6 @@ class TableAssetsHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 			self.setCellWidget(0, i+1, TableHeaderIcon(task))
 
 		self.resizeRows()
-
-
-
 
 
 

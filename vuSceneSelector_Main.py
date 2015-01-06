@@ -48,7 +48,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "3"
+VERSION_MINOR = "3.1"
 DEBUG = os.getenv("DEBUG")
 
 
@@ -210,8 +210,8 @@ class vuSceneSelector(QtGui.QWidget):
 		#	Assets
 		#
 
-		self.scrollAssets = ListTemplate.ScrollIndicator()
-		self.tableAssets = ListsAssets.TableAssets(self, self.scrollAssets)
+		#self.scrollAssets = ListTemplate.ScrollIndicator()
+		self.tableAssets = ListsAssets.TableAssets(self)
 		self.labelAssets = ListsAssets.TableAssetsHeader(self, self.tableAssets)
 
 		gridAsset = QtGui.QGridLayout()
@@ -219,7 +219,7 @@ class vuSceneSelector(QtGui.QWidget):
 		gridAsset.setRowStretch(1, 1)
 		gridAsset.addWidget(self.labelAssets, 0, 0)
 		gridAsset.addWidget(self.tableAssets, 1, 0, 2, 1)
-		gridAsset.addWidget(self.scrollAssets, 2, 0)
+		#gridAsset.addWidget(self.scrollAssets, 2, 0)
 
 		widgetAsset = QtGui.QWidget()
 		widgetAsset.setLayout(gridAsset)
@@ -300,6 +300,7 @@ class vuSceneSelector(QtGui.QWidget):
 		gridGrpArtist.setMargin(0)
 		gridGrpArtist.addWidget(widgetFilter, 0, 0)
 		gridGrpArtist.addWidget(self.splitterGrpArtist, 1, 0)
+		gridGrpArtist.setRowStretch(1,1)
 
 
 		widgetGrpArtist = QtGui.QWidget()
@@ -420,7 +421,7 @@ class vuSceneSelector(QtGui.QWidget):
 	def saveValues(self):
 		# Save Selections
 		SETTINGS["selType"] = self.selType
-		SETTINGS["filterType"] = self.filterType
+		SETTINGS[self.selType + "FilterType"] = self.filterType
 		SETTINGS[self.selType + "Group"] = self.selGroup
 		SETTINGS[self.selType + "Task"] = self.selTask
 		SETTINGS[self.selType + "Name"] = self.selName
@@ -468,7 +469,7 @@ class vuSceneSelector(QtGui.QWidget):
 	def loadValues(self):
 		"""Load Values from Dict, when Switching Type"""
 		self.selType = SETTINGS["selType"]
-		self.filterType = SETTINGS["filterType"]
+		self.filterType = SETTINGS[self.selType + "FilterType"]
 		self.selGroup = SETTINGS[self.selType + "Group"]
 		self.selTask = SETTINGS[self.selType + "Task"]
 		self.selName = SETTINGS[self.selType + "Name"]
@@ -677,24 +678,6 @@ class vuSceneSelector(QtGui.QWidget):
 		if self.interactive:
 			self.filterType = "artist"
 			self.changeGroup(self.listArtist)
-
-
-	"""
-	def changeArtist(self):
-		self.selArtist = str(self.listArtist.currentItem().text())
-
-		# Clear GroupSeelection
-		self.selGroup = ""
-		self.updateGroups()
-
-		# Update other Widgets
-		self.updateAssets()
-		#self.updateDesr()
-		#self.updateHeader()
-		#self.updateToDo()
-		#self.updateScenes()
-		if DEBUG:	self.updateToDo()
-	"""
 
 
 	def changeTask(self):

@@ -50,6 +50,22 @@ class SettingsFile(object):
 				break;
 		return lines
 
+	def addOption(self, attr, value):
+		if "w" not in self.mode:
+			return False
+
+		# Save File
+		with open(self.filename, 'a') as f:
+			# '' bei Strings
+			if type(value) in [str, unicode]:
+				value = "'" + value + "'"
+
+			# Write new Line
+			f.write(attr + " = " + str(value))
+			#out.close()
+		return True
+
+
 	def save(self):
 		if "w" not in self.mode:
 			return False
@@ -108,6 +124,14 @@ class Settings(object):
 			if attr in settingsFile.data:
 				settingsFile.data[attr] = value
 				return True
+
+		# Option not set yet.... Try to SaveIt
+		print "Option not found", attr
+		for settingsFile in self.files:
+			if "w" in settingsFile.mode:
+				settingsFile.addOption(attr, value)
+				return True
+
 		return False
 
 
@@ -117,12 +141,21 @@ SETTINGS = Settings()
 if __name__ == '__main__':
 	#SETTINGS_GLOBAL = "/ln/Dev/017_KroetenliedPipeline/vuSceneSelector_Tests/pyQt_Tests/settings_v001.py"
 	#SETTINGS_USER = "/ln/Dev/017_KroetenliedPipeline/vuSceneSelector_Tests/pyQt_Tests/settings_v002.py"
+	SETTINGS_USER = "V:/090_Software/Intern/vuPipelineOverview_Settings/user_vullmann.py"
 
 	s = Settings()
 	#s.load(SETTINGS_GLOBAL)
-	#s.load(SETTINGS_USER)
+	s.load(SETTINGS_USER)
 
 	#s["PROJECT_NAME"] = "JagonUser3"
 	#s["projectRoot"] = "V:"
 	#s.save()
 	#print s["projectRoot"]
+
+	print s["selType"]
+
+	print s["Test"]
+	s["Test"] = "Hallo2"
+	print s["Test"]
+
+	s.save()
