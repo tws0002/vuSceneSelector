@@ -48,7 +48,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "3.1"
+VERSION_MINOR = "3.2"
 DEBUG = os.getenv("DEBUG")
 
 
@@ -155,10 +155,14 @@ class vuSceneSelector(QtGui.QWidget):
 
 		labelFilter = QtGui.QLabel("Group / Artist:")
 		self.listFilter = ListTemplate.ListTemplate()
+		#self.listFilter.addItems(["dummy"])
+		self.listFilter.addItems(["-- All --", "-- Favorites --"])
 
-		x = 28
-		self.listFilter.setMaximumHeight(x)
-		self.listFilter.setMinimumHeight(x)
+		#sp = QtGui.QSizePolicy()
+		x = 18
+		self.listFilter.setMaximumHeight(x*2)
+		self.listFilter.setMinimumHeight(x*2)
+		#self.listFilter.setSizePolicy
 
 		gridFilter = QtGui.QGridLayout()
 		gridFilter.setMargin(0)
@@ -382,7 +386,6 @@ class vuSceneSelector(QtGui.QWidget):
 
 		# Load and Apply Saved Data
 		self.listType.addItems(Index.getTypes())
-		self.listFilter.addItems(["-- All --", "-- Favorites --"])
 		self.loadValues()
 		self.loadInterface()
 		self.updateToDo()
