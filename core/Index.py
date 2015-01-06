@@ -98,7 +98,7 @@ def getArtists(filterType=None):
 	# Handle this somewhere else?
 	tmp = []
 	for name in artists:
-		tmp += name.split(";") if name else []
+		tmp += re.findall("\w+", name)
 
 	return sorted(list(set(tmp)))
 
