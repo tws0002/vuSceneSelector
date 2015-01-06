@@ -1,7 +1,7 @@
 #import re
 import os
 import cPickle as pickle
-
+import re
 
 DB_FILENAME = os.path.splitext(__file__)[0] + ".p"
 data = None
@@ -26,14 +26,9 @@ def getFilter(parts):
 				return item[attr] == value
 		return filterFunction
 
-	if parts[1] == "in":
-		def filterFunction(item):
-			if (not attr in item):
-				return True
-			elif item[attr] in [None, ""]:
-				return False
-			else:
-				return parts[0] in item[parts[2]]
+	if op == "in":
+		def filterFunction(name):
+			return value in getValue(name, attr)
 
 	return filterFunction
 
@@ -49,6 +44,8 @@ def getTypes():
 	if not data: load()
 	return data["Overview"]["Types"]
 	#return [tableName for tableName in db.getTables()][1:]
+
+
 
 
 
@@ -73,33 +70,67 @@ def getGroups(filterType=None):
 def getNames(filterType=None, filterGroup=None, Filter=[]):
 	if not data: load()
 
-	names = []
-	for name in data["items"]:
-		item = data["items"][name]
 
-		# Filter by Type
-		if filterType and item["Type"] != filterType:
-			continue
+	names = data["items"].keys()
 
-		# Filter by Group
-		if filterGroup and item["Group"] != filterGroup:
-			continue
+	# Filter by Type
+	if filterType:
+		names = [name for name in names if getValue(name, "Type") == filterType]
 
-		# Cutsom Filter
-		if False in [getFilter(f)(item) for f in Filter]:
-			continue
+	# Filter by Group
+	if filterGroup:
+		names = [name for name in names if getValue(name, "Group") == filterGroup]
 
-		names.append(name)
+	# CustomFilters, Keep only if All Filters return True
+	names = [name for name in names if all([getFilter(f)(name) for f in Filter])]
+
 	return sorted(names)
 
 
-#print getNames(Filter=Filter)
+def getArtists(filterType=None):
+	if not data: load()
+
+	artists = []
+
+	for name in getNames(filterType):
+		artists += getValue(name, "*_Artist")
+
+	# Handle this somewhere else?
+	tmp = []
+	for name in artists:
+		tmp += name.split(";") if name else []
+
+	return sorted(list(set(tmp)))
+
+
+
+
 
 ########################
 #
 #	get Values
 #
 #
+
+def getAttrs(name=None, expr=None):
+	if not data: load()
+
+	if expr:
+		# Get Values
+		regex = re.compile(expr.replace("*", ".+"))
+		attrs = getAttrs(name)
+		return [attr for attr in attrs if re.match(regex, attr)]
+
+	if name:
+		return data["items"][name].keys()
+	else:
+		attrs = []
+		for name in getNames():
+			for key in data["items"][name].keys():
+				if key not in attrs:
+					attrs.append(key)
+		return attrs
+
 
 def getType(name):
 	"""Obsolete ???"""
@@ -136,6 +167,20 @@ def getTaskNum(name):
 
 def getValue(name, attr):
 	if not data: load()
+
+	if "*" in attr:
+		attrs = getAttrs(name, attr)
+		return [getValue(name, attrName) for attrName in attrs]
+		#return [data["items"][name][attrName] for attrName in attrs]
+
+		# Return as Dict?
+		"""
+		attrs = {}
+		for attrName in getAttrs(name, attr):
+			attrs[attrName] = getValue(name, attrName) #data["items"][name][attrName]
+		return attrs
+		"""
+
 	if name in data["items"]:
 		return data["items"][name][attr]
 	else:
@@ -172,23 +217,40 @@ def setValue(name, attr, value, saveData=True):
 
 
 
+
+
+
+
+
+def Tests():
+
+	# DEBUG getValues
+	#print getValues("")
+
+
+	# DEBUG GetAttrs
+	if False:
+		print 52 == len(getAttrs()),						getAttrs()
+		print 40 == len(getAttrs("Z_90100")),				getAttrs("Z_90100")
+		print 13 == len(getAttrs(expr="*_Status")),			getAttrs(expr="*_Status")
+		print  9 == len(getAttrs("Z_90100" ,"*_Status")),	getAttrs("Z_90100" ,"*_Status")
+
+
 if __name__ == '__main__':
 	pass
 	load()
 
-	#for name in sorted(data["items"].keys()):
-	#	print name #["Z_90100"]["Description"]
-	value = data["items"]["Z_90100"]["COMP_Todo"]
-	print value, type(value)
+	Tests()
 
-	#k = str(data["items"].keys()[0]).replace("\n", "")
-	#print k, type(k)
-	#l = unicode("F_25430")
-	#print l, type(l)
-	#print l == str(k)
-	#print data["items"]["F_25430"]
-	#print getValue("Z_90200", "Tags")
-	#shots = getNames("Shots", Filter=[("VFX", "in", "Tags"), ("C", "==", "Group")])
+	#shots = getNames(Filter=[("Martin", "in", "*_Artist")])
 	#print len(shots), shots
-	#setValue("Z_90100", "COMP_Todo", "Test123456")
 
+	print getArtists()
+
+	#print getValue("Z_90100", "*_Artist")
+
+
+	#print getValue("Z_90100", "*_Artist")
+
+
+	#print getAttrs("*_Status")

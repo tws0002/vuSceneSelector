@@ -72,8 +72,11 @@ def createHeaderIcons():
 
 			color = QtGui.QColor(SETTINGS["COLOR_TEXT_GREY"])
 			tex = iconFromFile(IMG, 14, color)
-			HEADER_ICONS[task]["white"] = tex
+			HEADER_ICONS[task]["grey"] = tex
 
+			color = QtGui.QColor(SETTINGS["COLOR_ICON_YELLOW"])
+			tex = iconFromFile(IMG, 14, color)
+			HEADER_ICONS[task]["active"] = tex
 
 
 
@@ -160,7 +163,7 @@ class TableAssetsIcon(QtGui.QLabel):
 		self.widget.selName = self.shot
 		self.origStyle = self.styleSheet()
 		self.setStyleSheet("background-color: " + style.COLOR_SELECTION)
-		self.ctxtShowMenue(event.globalPos ())
+		self.ctxtShowMenue(event.globalPos())
 
 
 
@@ -171,17 +174,43 @@ class TableAssetsIcon(QtGui.QLabel):
 
 
 class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
-	def __init__(self, window):
+	def __init__(self, window, scrollIndicator):
 		super(TableAssets, self).__init__(window)
-		self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+
 		self.parent = window
+		self.scrollIndicator = scrollIndicator
+		self.names = []
 
+		# Selection
+		self.selType = ""
+		self.selGroup = ""
+		self.selArtist = ""
 
-		self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-		self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)" ), self.mouseClickRight)
+		# Filters
+		self.FilterTasks = {}
+
 
 		createTaskIcons()
 
+		#self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+		self.verticalScrollBar().setStyleSheet("width: 0px")
+
+		self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+		self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+		self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)" ), self.mouseClickRight)
+
+
+	def resizeEvent(self, event):
+		super(TableAssets, self).resizeEvent(event)
+
+		if self.scrollIndicator:
+			self.scrollIndicator.setVisible(self.verticalScrollBarVisible)
+		"""
+		if self.verticalScrollBarVisible:
+			self.setStyleSheet("background-color: red")
+		else:
+			self.setStyleSheet("background-color: green")
+		"""
 
 	def FavoriteSet(self, item, value):
 		if value:
@@ -197,12 +226,12 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		item.setIcon(icon)
 
 
-	def addRows(self, names, parent, selType):
+	def addRows(self, names, parent):
 		"""Add a Row, with one TextItem and Icons for the Tasks"""
 		self.clear()
 
 		# Get Tasks for TaskIcons
-		tasks = Index.getTasks(selType)
+		tasks = Index.getTasks(self.selType)
 		tasks = [task for task in tasks if task not in SETTINGS["TASKS_WITHOUT_ICON"]]
 
 		# Adjust Size
@@ -228,31 +257,88 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 			# Task Icons
 			for j, task in enumerate(tasks):
-				self.setCellWidget(i, j+1, TableAssetsIcon(self, item, task, parent, selType))
+				self.setCellWidget(i, j+1, TableAssetsIcon(self, item, task, parent, self.selType))
 
 		self.resizeRows()
 		return True
 
+	"""
+	def Filter(self):
+		Filter = []
 
-	def addNames(self, selType, selGrp=""):
-		"""Get desired Names"""
-		if selType == "":
+		for taskName in self.FilterTasks:
+			print "FilterTasks", taskName
+
+		if self.Type == "Shots":
+			Filter += [("VFX", "in", "Tags")]
+
+		return Filter
+	"""
+
+	def update(self):
+		# Get Names
+		if self.selType == "":
 			return
+		names = Index.getNames(self.selType)
 
+
+		# Filter Names
+		if self.selType == "Shots":
+			names = [name for name in names if "VFX" in Index.getValue(name, "Tags")]
+
+		if self.filterType == "global":
+			# Global Filters
+			if self.selGroup == "-- Favorites --":
+				names = [name for name in names if name in SETTINGS["Favorites"]]
+
+		elif self.filterType == "group":
+			names = [name for name in names if self.selGroup == Index.getValue(name, "Group")]
+
+		elif self.filterType == "artist":
+			names = [name for name in names if self.selGroup in Index.getValue(name, "*_Artist")]
+
+
+		for taskName, value in self.FilterTasks.iteritems():
+			if value:
+				names = [name for name in names if Index.getValue(name, taskName + "_Status")]
+
+
+		# Add them!
 		self.interactive = False
+		self.addRows(names, self.parent)
+		self.resizeEvent(None)
+		self.interactive = True
+
+
+	def addNames(self, selType, selGroup="", filterType="global"):
+		"""Get desired Names"""
+		self.selType = selType
+		self.filterType = filterType
+		self.selGroup = selGroup
+
+		self.update()
+
+
+		"""
+
+
 
 		# Get Items
 		if selGrp == "-- All --":
-			names = Index.getNames(selType)
+			names = Index.getNames(selType, Filter=self.Filter())
 		elif selGrp == "-- Favorites --":
-			names = [name for name in Index.getNames(selType) if name in SETTINGS["Favorites"]]
+			
 		else:
-			Filter = [("VFX", "in", "Tags")]
-			names = Index.getNames(selType, selGrp, Filter)
+			names = Index.getNames(selType, selGrp, self.Filter())
 
-		# Add them!
-		self.addRows(names, self.parent, selType)
-		self.interactive = True
+
+		# Filter by Artist?
+		if selArtist != "-- All --":
+			names = [name for name in names if selArtist in Index.getValue(name, "*_Artist")]
+
+		self.names = names
+		"""
+
 
 
 
@@ -335,16 +421,44 @@ class TableHeaderIcon(QtGui.QLabel):
 		super(TableHeaderIcon, self).__init__()
 
 		self.task = task
+		self.active = False
+		self.icon = None
+		self.setCursor(QtCore.Qt.PointingHandCursor)
 
 		self.setText("")
 		self.addIcon()
-		#self.setToolTip(self.shot + "_" + self.task)
+
+
+	def update(self):
+		self.setPixmap(self.icon)
+
+	def enterEvent(self, event):
+		icon = HEADER_ICONS[self.task]["active"]
+		self.setPixmap(icon)
+
+
+	def leaveEvent(self, event):
+		self.update()
+
 
 	def addIcon(self, status=None):
 		"Set IconImage depending on the Text in that Cell"
-		icon = HEADER_ICONS[self.task]["white"]
-		self.setPixmap(icon)
+
+		if self.active:
+			self.icon = HEADER_ICONS[self.task]["active"]
+			return True
+		else:
+			self.icon = HEADER_ICONS[self.task]["grey"]
+
+		self.update()
 		return True
+
+
+
+	def toogle(self):
+		self.active = not self.active
+		self.addIcon()
+
 
 
 class TableAssetsHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
@@ -352,35 +466,41 @@ class TableAssetsHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 	def __init__(self, window, table):
 		super(TableAssetsHeader, self).__init__(window)
 		self.table = table
+		self.tasks = []
 
 		createHeaderIcons()
 
-
+		# Adjust Size/Style
 		self.setRowCount(1)
+		self.setColumnCount(1)
 		self.setFixedHeight(14)
 		self.setStyleSheet("border: 0px solid black")
 
-		self.connect(self, QtCore.SIGNAL("cellClicked(int, int)"), self.cellClicked)
-
-		# Adjust Size
-		self.setColumnCount(1)
-
-		#for i in range(self.columnCount()):
-		#	self.setColumnWidth(i+1, 16+2)
+		self.cellClicked.connect(self.cellClicked_User)
 
 
+	def cellClicked_User(self, row, col):
+		if col:
+			# Task-Icon
+			item = self.cellWidget(row, col)
+			item.toogle()
 
+			self.table.FilterTasks[item.task] = item.active
+			self.table.update()
 
-		# Name
-		"""
-		for taskName in range(task):
-			widget = QtGui.QLabel(str(i))
-			self.setCellWidget(0, i, widget)
-		"""
+		else:
+			# Clicked on Label --> Sorting
+			self.table.sortOrder = 1  - self.table.sortOrder
+			self.table.sortItems(col, self.table.sortOrder)
+
+			item = self.cellWidget(row, col)
+			item.toogle(self.table.sortOrder)
 
 
 	def setType(self, selType):
-		widget = QtGui.QLabel(selType)
+		#widget = QtGui.QLabel(selType)
+		widget = ListTemplate.HeaderItemSort(selType)
+		widget.setToolTip("Click to Sort")
 
 		# Label
 		self.setCellWidget(0, 0, widget)
@@ -388,54 +508,22 @@ class TableAssetsHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		# Tasks:
 		tasks = Index.getTasks(selType)
 		tasks = [task for task in tasks if task not in SETTINGS["TASKS_WITHOUT_ICON"]]
-
+		self.table.FilterTasks = {task:False for task in tasks}
 
 		self.setColumnCount(len(tasks) + 1)
-		# Adjust Size
-		for i in range(self.columnCount()):
-			self.setColumnWidth(i+1, 16+2)
 
 		# Task Icons
 		for i, task in enumerate(tasks):
+			# Adjust Size
+			self.setColumnWidth(i+1, 16+2)
+			# Add Widgets
 			self.setCellWidget(0, i+1, TableHeaderIcon(task))
 
 		self.resizeRows()
 
 
 
-	def cellClicked(self, row, column):
-		print "cellClicked", row, column
-		self.table.sortOrder = 1  - self.table.sortOrder
-		self.table.sortItems(column, self.table.sortOrder)
 
-
-
-
-
-
-
-
-
-
-class WidgetAssets(QtGui.QWidget):
-	def __init__(self, window):
-		super(WidgetAssets, self).__init__()
-		self.window = window
-
-
-		# Items
-		self.table = TableAssets(self.window)
-		self.table.addNames("Shots", "A")
-		self.tableHeader = TableAssetsHeader(self.window, self.table)
-		self.tableHeader.setType("Shots")
-
-		# Layout
-		vBox = QtGui.QVBoxLayout()
-
-		vBox.addWidget(self.tableHeader)
-		vBox.addWidget(self.table)
-		self.layout = vBox
-		self.setLayout(vBox)
 
 
 

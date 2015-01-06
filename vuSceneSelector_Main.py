@@ -26,21 +26,19 @@ SETTINGS = Settings.SETTINGS
 SETTINGS.load(SETTINGS_PROJECT, "r")
 SETTINGS.load(SETTINGS["Settings_User"])
 
+
 # Import Modules
 from core import Index
 from sync import syncTasks
-from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks
+from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, Help
 from adminUtils import adminMainUI
 
 if SETTINGS["projectName"] == "Jagon":
 	from ui import Header_Jagon as Header
-	from ui import Help_Jagon as Help
 elif SETTINGS["projectName"] == "Kroetenlied":
 	from ui import Header_Kroetenlied as Header
-	from ui import Help_Jagon as Help
 else:
 	from ui import Header_Jagon as Header
-	from ui import Help_Jagon as Help
 
 
 ##############################################################################################
@@ -50,7 +48,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "2.3"
+VERSION_MINOR = "3"
 DEBUG = os.getenv("DEBUG")
 
 
@@ -106,8 +104,10 @@ class vuSceneSelector(QtGui.QWidget):
 	def __init__(self):
 		super(vuSceneSelector, self).__init__()
 
+
 		# Variables for Interface
 		self.selType = ""
+		self.filterType = ""
 		self.selGroup = ""
 		self.selTask = ""
 		self.selName = ""
@@ -146,17 +146,41 @@ class vuSceneSelector(QtGui.QWidget):
 		widgetType = QtGui.QWidget()
 		widgetType.setLayout(gridType)
 
+
+
 		#########################
 		#
 		#	Sequence/Group
 		#
 
-		self.labelSeq = QtGui.QLabel("Sequence:")
+		labelFilter = QtGui.QLabel("Group / Artist:")
+		self.listFilter = ListTemplate.ListTemplate()
+
+		x = 28
+		self.listFilter.setMaximumHeight(x)
+		self.listFilter.setMinimumHeight(x)
+
+		gridFilter = QtGui.QGridLayout()
+		gridFilter.setMargin(0)
+		gridFilter.addWidget(labelFilter, 0, 0)
+		gridFilter.addWidget(self.listFilter, 1, 0)
+
+		widgetFilter = QtGui.QWidget()
+		widgetFilter.setLayout(gridFilter)
+
+
+
+		#########################
+		#
+		#	Sequence/Group
+		#
+
+		labelSeq = QtGui.QLabel("Group:")
 		self.listSeq = ListTemplate.ListTemplate()
 
 		gridSeq = QtGui.QGridLayout()
 		gridSeq.setMargin(0)
-		gridSeq.addWidget(self.labelSeq, 0, 0)
+		#gridSeq.addWidget(labelSeq, 0, 0)
 		gridSeq.addWidget(self.listSeq, 1, 0)
 
 		widgetSeq = QtGui.QWidget()
@@ -165,16 +189,37 @@ class vuSceneSelector(QtGui.QWidget):
 
 		#########################
 		#
+		#	Artist
+		#
+
+		labelArtist = QtGui.QLabel("Artist:")
+		self.listArtist = ListTemplate.ListTemplate()
+
+		gridArtist = QtGui.QGridLayout()
+		gridArtist.setMargin(0)
+		#gridArtist.addWidget(labelArtist, 0, 0)
+		gridArtist.addWidget(self.listArtist, 1, 0)
+
+		widgetArtist = QtGui.QWidget()
+		widgetArtist.setLayout(gridArtist)
+
+
+
+		#########################
+		#
 		#	Assets
 		#
 
-		self.tableAssets = ListsAssets.TableAssets(self)
+		self.scrollAssets = ListTemplate.ScrollIndicator()
+		self.tableAssets = ListsAssets.TableAssets(self, self.scrollAssets)
 		self.labelAssets = ListsAssets.TableAssetsHeader(self, self.tableAssets)
 
 		gridAsset = QtGui.QGridLayout()
 		gridAsset.setMargin(0)
+		gridAsset.setRowStretch(1, 1)
 		gridAsset.addWidget(self.labelAssets, 0, 0)
-		gridAsset.addWidget(self.tableAssets, 1, 0)
+		gridAsset.addWidget(self.tableAssets, 1, 0, 2, 1)
+		gridAsset.addWidget(self.scrollAssets, 2, 0)
 
 		widgetAsset = QtGui.QWidget()
 		widgetAsset.setLayout(gridAsset)
@@ -237,16 +282,33 @@ class vuSceneSelector(QtGui.QWidget):
 
 
 
+		self.listWidgetsGroups = [self.listFilter, self.listSeq, self.listArtist]
+
+
 		#########################
 		#						#
 		#        Layout         #
 		#						#
 		#########################
 
+		# Seq/Artist
+		self.splitterGrpArtist = vuSplitter(QtCore.Qt.Vertical)
+		self.splitterGrpArtist.addWidget(widgetSeq)
+		self.splitterGrpArtist.addWidget(widgetArtist)
+
+		gridGrpArtist = QtGui.QGridLayout()
+		gridGrpArtist.setMargin(0)
+		gridGrpArtist.addWidget(widgetFilter, 0, 0)
+		gridGrpArtist.addWidget(self.splitterGrpArtist, 1, 0)
+
+
+		widgetGrpArtist = QtGui.QWidget()
+		widgetGrpArtist.setLayout(gridGrpArtist)
+
 		# Splitter Lists
 		self.splitterLists = vuSplitter(QtCore.Qt.Horizontal)
 		self.splitterLists.addWidget(widgetType)
-		self.splitterLists.addWidget(widgetSeq)
+		self.splitterLists.addWidget(widgetGrpArtist)
 		self.splitterLists.addWidget(widgetAsset)
 		self.splitterLists.addWidget(widgetTask)
 
@@ -265,6 +327,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 		# Layout SceneSelector
 		main_grid = QtGui.QGridLayout()
+		main_grid.setMargin(5)
 		main_grid.addWidget(self.header, 0, 0)
 		main_grid.addWidget(self.splitterVertical, 1, 0)
 		main_grid.setRowStretch(1, 1)
@@ -298,10 +361,12 @@ class vuSceneSelector(QtGui.QWidget):
 		#
 
 		self.connect(self.listType, QtCore.SIGNAL("itemSelectionChanged()"), self.changeType)
-		self.listSeq.itemSelectionChanged_User = self.changeGroup
-		self.tableAssets.itemSelectionChanged_User = self.changeAsset
-		self.listTasks.itemSelectionChanged_User = self.changeTask
-		self.sceneList.itemSelectionChanged_User = self.changeScene
+		self.listFilter.itemSelectionChanged_User	= self.changeGroupFilter
+		self.listSeq.itemSelectionChanged_User		= self.changeGroupGroup
+		self.listArtist.itemSelectionChanged_User	= self.changeGroupArtist
+		self.tableAssets.itemSelectionChanged_User	= self.changeAsset
+		self.listTasks.itemSelectionChanged_User	= self.changeTask
+		self.sceneList.itemSelectionChanged_User	= self.changeScene
 		self.connect(self.toDo, QtCore.SIGNAL("textChanged()"), self.saveToDoEvent)
 		self.toDo.focusOutEvent = self.saveToDo
 
@@ -316,6 +381,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 		# Load and Apply Saved Data
 		self.listType.addItems(Index.getTypes())
+		self.listFilter.addItems(["-- All --", "-- Favorites --"])
 		self.loadValues()
 		self.loadInterface()
 		self.updateToDo()
@@ -326,7 +392,6 @@ class vuSceneSelector(QtGui.QWidget):
 		self.interactive = True
 
 
-
 	def closeEvent(self, event):
 		self.updater.running = False
 		self.saveInterface()
@@ -334,8 +399,10 @@ class vuSceneSelector(QtGui.QWidget):
 		self.saveToDo(None)
 
 
-	def close(self):
-		self.closeEvent(None)
+	def close(self, event=None):
+		self.closeEvent(event)
+		QtGui.QApplication.quit()
+
 
 
 
@@ -353,6 +420,7 @@ class vuSceneSelector(QtGui.QWidget):
 	def saveValues(self):
 		# Save Selections
 		SETTINGS["selType"] = self.selType
+		SETTINGS["filterType"] = self.filterType
 		SETTINGS[self.selType + "Group"] = self.selGroup
 		SETTINGS[self.selType + "Task"] = self.selTask
 		SETTINGS[self.selType + "Name"] = self.selName
@@ -400,6 +468,7 @@ class vuSceneSelector(QtGui.QWidget):
 	def loadValues(self):
 		"""Load Values from Dict, when Switching Type"""
 		self.selType = SETTINGS["selType"]
+		self.filterType = SETTINGS["filterType"]
 		self.selGroup = SETTINGS[self.selType + "Group"]
 		self.selTask = SETTINGS[self.selType + "Task"]
 		self.selName = SETTINGS[self.selType + "Name"]
@@ -409,16 +478,21 @@ class vuSceneSelector(QtGui.QWidget):
 
 	def saveInterface(self):
 		SETTINGS["UI_mainWindow"] 			= self.saveGeometry().toBase64().data()
+		SETTINGS["UI_splitterGrpArtist"] 	= self.splitterGrpArtist.saveState().toBase64().data()
 		SETTINGS["UI_splitterLists"] 		= self.splitterLists.saveState().toBase64().data()
 		SETTINGS["UI_splitterSceneToDo"] 	= self.splitterSceneToDo.saveState().toBase64().data()
 		SETTINGS["UI_splitterVertical"] 	= self.splitterVertical.saveState().toBase64().data()
 
 
 	def loadInterface(self):
-		self.restoreGeometry				(QtCore.QByteArray().fromBase64(SETTINGS["UI_mainWindow"]))
-		self.splitterLists.restoreState		(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterLists"]))
-		self.splitterVertical.restoreState	(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterVertical"]))
-		self.splitterSceneToDo.restoreState	(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterSceneToDo"]))
+		try:
+			self.restoreGeometry				(QtCore.QByteArray().fromBase64(SETTINGS["UI_mainWindow"]))
+			self.splitterLists.restoreState		(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterLists"]))
+			self.splitterGrpArtist.restoreState	(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterGrpArtist"]))
+			self.splitterVertical.restoreState	(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterVertical"]))
+			self.splitterSceneToDo.restoreState	(QtCore.QByteArray().fromBase64(SETTINGS["UI_splitterSceneToDo"]))
+		except:
+			print "[WARNING] Couldn't load Interface"
 
 
 
@@ -434,9 +508,12 @@ class vuSceneSelector(QtGui.QWidget):
 	#                       #
 
 	def updateGroups(self):
-		"Update Groups/Sequence-List"
-		self.listSeq.setItems(["-- All --", "-- Favorites --"] + Index.getGroups(self.selType))
-		self.listSeq.setSelection2(self.selGroup)
+		"Update Groups-List"
+		self.listSeq.setItems(Index.getGroups(self.selType))
+		self.listArtist.setItems(Index.getArtists(self.selType))
+
+		for listWidget in self.listWidgetsGroups:
+			listWidget.setSelection2(self.selGroup, setDefault=False)
 
 
 	def updateTasks(self):
@@ -447,10 +524,10 @@ class vuSceneSelector(QtGui.QWidget):
 
 	def updateAssets(self):
 		"Update Asset/Shot-List"
-		self.tableAssets.addNames(self.selType, self.selGroup)
+		self.tableAssets.addNames(self.selType, self.selGroup, self.filterType)
 		self.labelAssets.setType(self.selType)
 
-		if not self.tableAssets.setSelection2(self.selName):
+		if not self.tableAssets.setSelection2(self.selName) and self.tableAssets.rowCount():
 			self.selName = str(self.tableAssets.currentItem().text())
 
 
@@ -550,7 +627,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 		# Change UI
 		#self.labelAssets.setText(self.selType) # TODO: Fix this?!
-		self.labelSeq.setText(SETTINGS[self.selType + "_GroupLabel"])
+		#self.labelSeq.setText(SETTINGS[self.selType + "_GroupLabel"])
 
 		# Update all the other Lists
 		self.loadValues()
@@ -566,26 +643,61 @@ class vuSceneSelector(QtGui.QWidget):
 		return
 
 
-	def changeGroup(self):
-		# Save
-		#self.saveToDo()
-
+	def changeGroup(self, widget):
 		# Set Vars
-		self.selGroup = str(self.listSeq.currentItem().text())
+		self.selGroup = str(widget.currentItem().text())
+
+		# Clear Selection on others
+		self.interactive = False
+		for listWidget in self.listWidgetsGroups:
+			if listWidget != widget:
+				listWidget.setSelection2(None)
+		self.interactive = True
+
 
 		# Update other Widgets
 		self.updateAssets()
-		self.updateDesr()
-		self.updateHeader()
-		self.updateToDo()
-		self.updateScenes()
+		#self.updateDesr()
+		#self.updateHeader()
+		#self.updateToDo()
+		#self.updateScenes()
 		if DEBUG:	self.updateToDo()
+
+	def changeGroupFilter(self):
+		if self.interactive:
+			self.filterType = "global"
+			self.changeGroup(self.listFilter)
+
+	def changeGroupGroup(self):
+		if self.interactive:
+			self.filterType = "group"
+			self.changeGroup(self.listSeq)
+
+	def changeGroupArtist(self):
+		if self.interactive:
+			self.filterType = "artist"
+			self.changeGroup(self.listArtist)
+
+
+	"""
+	def changeArtist(self):
+		self.selArtist = str(self.listArtist.currentItem().text())
+
+		# Clear GroupSeelection
+		self.selGroup = ""
+		self.updateGroups()
+
+		# Update other Widgets
+		self.updateAssets()
+		#self.updateDesr()
+		#self.updateHeader()
+		#self.updateToDo()
+		#self.updateScenes()
+		if DEBUG:	self.updateToDo()
+	"""
 
 
 	def changeTask(self):
-		# Save
-		#self.saveToDo()
-
 		# Set Vars
 		self.selTask = str(self.listTasks.currentItem().text())
 
@@ -596,9 +708,6 @@ class vuSceneSelector(QtGui.QWidget):
 
 
 	def changeAsset(self):
-		# Save
-		#self.saveToDo()
-
 		# Set Vars
 		self.selName = str(self.tableAssets.currentItem().text())
 
@@ -669,7 +778,6 @@ class vuSceneSelector(QtGui.QWidget):
 
 		elif event.key() == QtCore.Qt.Key_F8:
 			self.close()
-			QtGui.QApplication.quit()
 			os.system("python2.7 " + sys.argv[0])
 
 		elif event.key() == QtCore.Qt.Key_F12:

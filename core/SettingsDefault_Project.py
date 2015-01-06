@@ -64,6 +64,7 @@ REFRESH_INTERVALL = 0.01
 Graphics_FolderHeaderImages = projectRoot + "/090_Software/Assets/Images/ShotThumbs/"
 # ICON
 Application_Icon = projectRoot + '/Icon_Jagon.png'
+Application_Icon = 'V:/090_Software/Assets/Icons/Icon_Jagon.png'
 
 # COLOR_HOVER
 COLOR_HOVER = '#953636'
@@ -105,6 +106,8 @@ fixedSize = False
 
 # showShotTaskStatusIcons
 showShotTaskStatusIcons = True
+
+showIconsInTaskList = True
 
 
 # ADMINS

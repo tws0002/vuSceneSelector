@@ -5,7 +5,7 @@ import ftplib
 
 # Import Modules
 from core import Settings, Index
-from ui import style
+from ui import style, MenuBar
 SETTINGS = Settings.SETTINGS
 
 
@@ -110,8 +110,9 @@ class Header(QtGui.QWidget):
 		self.main_grid.addLayout(self.imageLayout, 0, 0, 3, 1)
 
 		self.main_grid.addWidget(labelShotInfo, 0, 1)
-		self.main_grid.addWidget(self.grpInfo, 1, 1)
-		self.main_grid.addWidget(grpDescr, 2, 1)
+		self.main_grid.addWidget(MenuBar.MenuBar(), 0, 2)
+		self.main_grid.addWidget(self.grpInfo, 1, 1, 1, 2)
+		self.main_grid.addWidget(grpDescr, 2, 1, 1, 2)
 
 
 	def setImage(self, selName):

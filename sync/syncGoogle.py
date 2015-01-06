@@ -205,6 +205,7 @@ def load():
 
 if __name__ == '__main__':
 	pass
+	load()
 	#setValue("Z_90100", "ToDoCOMP", "Test123")
 	#setValue("Adler", "ToDoRIG", "Test123")
 	#loadAssets()

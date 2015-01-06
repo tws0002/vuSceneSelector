@@ -3,15 +3,10 @@ import shutil
 import re
 import imp
 
-"""
-Settings:
 
-Features:
-- Load multiple Files, in addtive Mode
-- Save always to corret File
+DEFAULT_PROJECT = os.path.dirname(__file__) + "/SettingsDefault_Project.py"
+DEFAULT_USER 	= os.path.dirname(__file__) + "/SettingsDefault_User.py"
 
-ToDo:
-"""
 
 
 class SettingsFile(object):
@@ -69,10 +64,6 @@ class SettingsFile(object):
 		out = open(self.filename, 'w')
 		out.writelines(lines)
 		out.close()
-
-
-DEFAULT_PROJECT = os.path.dirname(__file__) + "/SettingsDefault_Project.py"
-DEFAULT_USER 	= os.path.dirname(__file__) + "/SettingsDefault_User.py"
 
 
 

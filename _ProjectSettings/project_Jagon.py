@@ -69,7 +69,7 @@ COLOR_ICON_YELLOW = '#ffe100'
 COLOR_ICON_GREENCLEAN = '#00ff00'
 COLOR_ICON_GREEN = '#26802b'
 
-STATI = [{'color': '#3c3c3c', 'value': '', 'label': 'inactive'}, {'color': '#ff4040', 'value': '0', 'label': 'untouched'}, {'color': '#ffe100', 'value': '0.5', 'label': 'in progress'}, {'color': '#26802b', 'value': '1', 'label': 'done'}, {'color': '#3c3c3c', 'value': '', 'label': 'inactive'}, {'color': '#ff4040', 'value': '0', 'label': 'untouched'}, {'color': '#ffe100', 'value': '0.5', 'label': 'in progress'}, {'color': '#26802b', 'value': '1', 'label': 'done'}]
+STATI = []
 STATI += [{"value": "",   "label": "inactive",    "color": COLOR_ICON_INACTIVE}]
 STATI += [{"value": "0",  "label": "untouched",   "color": COLOR_ICON_RED}]
 STATI += [{"value": "0.5","label": "in progress", "color": COLOR_ICON_YELLOW}]

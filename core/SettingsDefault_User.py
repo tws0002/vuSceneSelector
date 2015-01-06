@@ -6,6 +6,7 @@
 ##
 
 selType = ''
+selArtist = ''
 
 ShotsGroup = ''
 ShotsName = ''

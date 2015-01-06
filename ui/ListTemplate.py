@@ -1,4 +1,5 @@
 from PyQt4 import QtCore, QtGui
+import sys
 
 
 class ListTemplate(QtGui.QListWidget):
@@ -14,17 +15,24 @@ class ListTemplate(QtGui.QListWidget):
 		self.interactive = True
 		return True
 
-	def setSelection2(self, name):
+	def setSelection2(self, name, setDefault=True):
+		self.setCurrentRow(-1)
+
+		if not name:
+			return False
 		item = self.findItems(name, QtCore.Qt.MatchExactly)
 
 		self.interactive = False
 		if item:
 			item[0].setSelected(True)
-		else:
+
+		if setDefault:
 			self.setCurrentRow(0)
 
 		self.interactive = True
 		return True
+
+
 
 
 	def itemSelectionChanged_User(self):
@@ -57,6 +65,9 @@ class TableTemplate(QtGui.QTableWidget):
 		self.sortOrder = 0
 		self.interactive = True
 		self.maximised = False
+
+		self.verticalScrollBarVisible = False
+		self.horizontalScrollBarVisible = False
 
 		# Table Style
 		self.verticalHeader().setVisible(False)
@@ -103,59 +114,8 @@ class TableTemplate(QtGui.QTableWidget):
 					self.window.keyPressEvent(event)
 					event.accept()
 					return True
-
-				elif event.key() == QtCore.Qt.Key_Space:
-					self.keyPress_Maximise(event)
-					event.accept()
-					return True
 		return self.window.eventFilter(obj, event) if self.window else False
 
-
-
-	def keyPress_Maximise(self, event):
-		parent = QtGui.QApplication.instance().activeWindow()
-
-		print str(parent.sizeHint().width())
-
-
-		if not self.maximised:
-			self.maximised = True
-			parent.labelShotInfo.hide()
-			parent.grpInfo.hide()
-			parent.grpDescr.hide()
-			parent.main_grid.addWidget(parent.header, 0, 0 ,3, 2)
-
-			# Resize
-			self.origWidth = parent.width()
-			#parent.updateGeometry()
-			#parent.sizeHint().width()
-			#parent.layout().setSizeConstraint(QtGui.QLayout.SetFixedSize)
-			#parent.resize(0, 0)
-
-
-		else:
-			self.maximised = False
-			parent.labelShotInfo.show()
-			parent.grpInfo.show()
-			parent.grpDescr.show()
-			parent.main_grid.addWidget(parent.header, 0, 0 ,3, 1)
-
-			parent.resize(self.origWidth, parent.height())
-			#parent.layout().setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
-
-
-
-
-		return
-		if not self.maximised:
-			self.maximised = True
-			parent.mainLayout.removeWidget(parent.mainWidget)
-			parent.mainLayout.addWidget(self)
-
-		else:
-			self.maximised = False
-			parent.mainLayout.removeWidget(self)
-			parent.mainLayout.addWidget(parent.mainWidget)
 
 
 	def itemSelectionChanged_User(self):
@@ -165,3 +125,58 @@ class TableTemplate(QtGui.QTableWidget):
 		if not self.interactive:
 			return
 		return self.itemSelectionChanged_User()
+
+	def resizeEvent(self, event):
+		super(TableTemplate, self).resizeEvent(event)
+		self.verticalScrollBarVisible = self.verticalScrollBar().isVisible()
+		self.horizontalScrollBarVisible = self.horizontalScrollBar().isVisible()
+
+
+
+
+class ScrollIndicator(QtGui.QWidget):
+	"""docstring for ScrollIndicator"""
+	def __init__(self):
+		super(ScrollIndicator, self).__init__()
+
+		self.label = QtGui.QLabel("...")
+		self.label.setAlignment(QtCore.Qt.AlignCenter)
+		#self.label.setStyleSheet("background-color: black")
+		#self.label.setStyleSheet("opacity: 0.2")
+		self.label.setStyleSheet("background-color: rgba(0, 0, 0, 20%)")
+
+		# Layout
+		self.layout = QtGui.QVBoxLayout()
+		self.layout.setMargin(0)
+		self.setLayout(self.layout)
+		#self.layout.addStretch()
+		self.layout.addWidget(self.label)
+
+
+
+
+
+class HeaderItemSort(QtGui.QLabel):
+	"""QLabel, with Sorting Indicator"""
+	def __init__(self, text):
+		super(HeaderItemSort, self).__init__(text)
+		self.text = text
+		self.state = None
+		self.setCursor(QtCore.Qt.PointingHandCursor)
+
+	def update(self):
+		text = self.text
+		if self.state != None:
+			text += " " + [u"\u25BC", u"\u25B2"][self.state]
+		self.setText(text)
+
+	def toogle(self, state):
+		self.state = state
+		self.update()
+
+
+if __name__ == '__main__':
+	app = QtGui.QApplication(sys.argv)
+	w = ScrollIndicator(None)
+	w.show()
+	app.exec_()

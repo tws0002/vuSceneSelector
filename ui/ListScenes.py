@@ -61,7 +61,7 @@ def iconOpenFolder():
 	#                       #
 	#                       #
 
-class TableScenesHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
+class TableScenesHeader(ListTemplate.TableTemplate):
 	"""Seperate HeaderWidget, for easer use"""
 	def __init__(self, window, table):
 		super(TableScenesHeader, self).__init__(window)
@@ -78,13 +78,14 @@ class TableScenesHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 
 
-		widget = QtGui.QLabel("Scenes:")
+		widget = ListTemplate.HeaderItemSort("Scenes:")
 		self.setCellWidget(0, 0, widget)
-		widget = QtGui.QLabel("Date:")
-		widget.setStyleSheet(style.styleTextGrey)
+		widget.setStyleSheet(style.QLABEL_HOVER)
+		widget = ListTemplate.HeaderItemSort("Date:")
+		widget.setStyleSheet(style.styleTextGrey + style.QLABEL_HOVER)
 		self.setCellWidget(0, 1, widget)
-		widget = QtGui.QLabel("Size:")
-		widget.setStyleSheet(style.styleTextGrey)
+		widget = ListTemplate.HeaderItemSort("Size:")
+		widget.setStyleSheet(style.styleTextGrey + style.QLABEL_HOVER)
 		self.setCellWidget(0, 2, widget)
 
 		self.resizeRows()
@@ -96,9 +97,18 @@ class TableScenesHeader(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 
 	def cellClicked(self, row, column):
-		print "cellClicked", row, column
 		self.table.sortOrder = 1  - self.table.sortOrder
 		self.table.sortItems(column, self.table.sortOrder)
+
+		for c in xrange(self.table.columnCount()):
+			item = self.cellWidget(row, c)
+
+			if c == column:
+				item.toogle(self.table.sortOrder)
+			else:
+				item.toogle(None)
+
+
 
 
 

@@ -43,12 +43,6 @@ QWidget
 	background-color: %(COLOR_BACKGROUND)s;
 }
 
-QLabel1
-{
-	border: 1px solid green;
-}
-
-
 QMenu
 {
 	border-width: 1px;
@@ -64,29 +58,26 @@ QMenu::item:selected
 
 
 QTabWidget::pane {
-	border-width: 1px;
-	border-color: %(COLOR_BORDER)s;
-	border-style: solid;
+	border: 0px, solid black;
 }
 
 
 QTabBar::tab {
 	padding: 3px;
-	border-width: 1px;
-	border-color: %(COLOR_BORDER)s;
-	border-style: solid;
-	padding: 2px;
+	border: 0px, solid black;
+}
 
-	border-bottom-style: 0px;
+
+QTabBar::tab{
+	color: %(COLOR_TEXT_GREY)s;
 }
 
 QTabBar::tab:selected{
-	color: black;
-	background: %(COLOR_HOVER)s;
+	color: %(COLOR_TEXT)s;
 }
 
 QTabBar::tab:hover {
-	background: %(COLOR_HOVER)s;
+	background-color: %(COLOR_HOVER)s;
 }
 
 QPushButton
@@ -208,25 +199,17 @@ QListWidget:item:hover, QTableWidget:item:hover
 	background: %(COLOR_HOVER)s;
 }
 
-QHeaderView::section
-{
-	color: %(COLOR_TEXT)s;
-	background: %(COLOR_BACKGROUND)s;
-	border: 0px solid black;
-}
-
-
 TableAssetsIcon
 {
 	background-color: %(COLOR_LIST)s;
 }
 """
 
-
 # Set Template
 STYLE = template % {
 	"COLOR_BACKGROUND": COLOR_BACKGROUND,
 	"COLOR_TEXT": COLOR_TEXT,
+	"COLOR_TEXT_GREY": COLOR_TEXT_GREY,
 	"COLOR_HOVER": COLOR_HOVER,
 	"COLOR_SELECTION": COLOR_SELECTION,
 	"COLOR_BORDER": COLOR_BORDER,
@@ -235,7 +218,34 @@ STYLE = template % {
 
 
 
+#                            #
+#                            #
+##############################
+#                            #
+#        List Headers        #
+#                            #
+##############################
+#                            #
+#                            #
 
+template = """
+QLabel:hover
+{
+	color: %(COLOR_TEXT)s;
+}
+"""
+
+
+
+QLABEL_HOVER = template % {
+	"COLOR_BACKGROUND": COLOR_BACKGROUND,
+	"COLOR_TEXT": COLOR_TEXT,
+	"COLOR_TEXT_GREY": COLOR_TEXT_GREY,
+	"COLOR_HOVER": COLOR_HOVER,
+	"COLOR_SELECTION": COLOR_SELECTION,
+	"COLOR_BORDER": COLOR_BORDER,
+	"COLOR_LIST": COLOR_LIST
+	}
 
 
 #                            #

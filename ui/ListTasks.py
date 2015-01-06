@@ -110,17 +110,60 @@ def getSequences(path, menu):
 
 
 
+
+
+
+def iconFromFile(filePath, size, color):
+	tex = QtGui.QPixmap(filePath)
+	tex.fill(color)
+	tex.setAlphaChannel(QtGui.QPixmap(filePath))
+	tex = tex.scaled(size, size, 0, 1)
+	return tex
+
+def createHeaderIcons():
+	Icons = {}
+	for Type in Index.getTypes():
+		for task in Index.getTasks(Type):
+			IMG = FOLDER_ICONS + "/task_" + task.upper() + ".png"
+
+			if not os.path.isfile(IMG):
+				IMG = FOLDER_ICONS + "/default.png"
+
+			Icons[task] = {}
+
+			color = QtGui.QColor(SETTINGS["COLOR_TEXT_GREY"])
+			tex = iconFromFile(IMG, 14, color)
+			Icons[task]["white"] = tex
+
+	return Icons
+
+
+
 #############################
 #
 #	Task-List
 #
 #
 
-
 class ListTasks(ListTemplate.ListTemplate):
 	def __init__(self, parent):
 		super(ListTasks, self).__init__()
 		self.parent = parent
+
+		if SETTINGS["showIconsInTaskList"]:
+			self.Icons = createHeaderIcons()
+
+
+	def setItems(self, items):
+		super(self.__class__, self).setItems(items)
+
+		if SETTINGS["showIconsInTaskList"]:
+			for item in [self.item(i) for i in xrange(self.count())]:
+				name = str(item.text())
+				icon = self.Icons[name]["white"]
+
+				item.setIcon(QtGui.QIcon(icon))
+
 
 
 	def contextMenuEvent(self, event):
