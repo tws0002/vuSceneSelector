@@ -294,7 +294,7 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 			names = [name for name in names if self.selGroup == Index.getValue(name, "Group")]
 
 		elif self.filterType == "artist":
-			names = [name for name in names if self.selGroup in Index.getValue(name, "*_Artist")]
+			names = [name for name in names if self.selGroup in Index.getArtists(filterShot=name)]
 
 
 		for taskName, value in self.FilterTasks.iteritems():

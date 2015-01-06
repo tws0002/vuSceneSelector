@@ -87,12 +87,19 @@ def getNames(filterType=None, filterGroup=None, Filter=[]):
 	return sorted(names)
 
 
-def getArtists(filterType=None):
+def getArtists(filterType=None, filterShot=None):
 	if not data: load()
 
 	artists = []
 
-	for name in getNames(filterType):
+	# Get ShotNames to query from
+	if filterShot:
+		names = [filterShot]
+	else:
+		names = getNames(filterType)
+
+	# ShotNames to ArtistNames
+	for name in names:
 		artists += getValue(name, "*_Artist")
 
 	# Handle this somewhere else?
@@ -245,9 +252,9 @@ if __name__ == '__main__':
 	#shots = getNames(Filter=[("Martin", "in", "*_Artist")])
 	#print len(shots), shots
 
-	print getArtists()
-
-	#print getValue("Z_90100", "*_Artist")
+	#print getArtists()
+	print getValue("E_18400", "*_Artist")
+	print getArtists(filterShot="E_18400")
 
 
 	#print getValue("Z_90100", "*_Artist")
