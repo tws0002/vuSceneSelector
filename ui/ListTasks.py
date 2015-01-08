@@ -80,7 +80,7 @@ def getSequences(path, menu):
 	foundSomething = False
 	items = []
 	if os.path.isdir(path):
-		for fileItem in sorted(scandir.scandir(path)):
+		for fileItem in sorted(scandir.scandir(path), key=lambda x: x.name , reverse=True):
 			foundSomething = True
 			fileName  = fileItem.name
 			filePath  = path + "/" + fileName
@@ -89,7 +89,7 @@ def getSequences(path, menu):
 				items.append(fileItem)
 
 
-		for fileItem in sorted(items, reverse=True):
+		for fileItem in items:
 			fileName = fileItem.name
 			submenu = menu.addMenu(fileName)
 

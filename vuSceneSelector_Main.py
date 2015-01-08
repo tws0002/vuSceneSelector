@@ -49,7 +49,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "4"
+VERSION_MINOR = "4.1"
 DEBUG = os.getenv("DEBUG")
 
 
