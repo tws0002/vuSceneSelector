@@ -148,8 +148,11 @@ class TableAssetsIcon(QtGui.QLabel):
 		ctxt_headline.hover = None
 
 		for status in SETTINGS["STATI"]:
-			if status == "" and not SETTINGS["isAdmin"]:
-				continue
+
+			if not SETTINGS["isAdmin"]:
+				print status
+				if status["value"] in ["", "1"]:
+					continue
 
 			ctxt_toogle = self.ctxtMenue.addAction(QtGui.QIcon(self.getIcon(status["value"])), status["label"])
 			ctxt_toogle.setIconVisibleInMenu(True)

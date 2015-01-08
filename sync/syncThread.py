@@ -11,10 +11,12 @@ sys.path.append(rootDir)
 
 # Settings
 SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
+
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
 
 
 
@@ -27,7 +29,8 @@ TASK_FOLDER = SETTINGS["syncFolder"]
 syncMode = SETTINGS["syncMode"]
 if syncMode == "Google":
 	from sync import syncGoogle as syncModule
-
+elif syncMode == "Shotgun":
+	from sync import syncShotgun as syncModule
 
 
 #####################################

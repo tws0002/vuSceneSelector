@@ -1,4 +1,5 @@
 import os, sys
+import re
 
 WORKING_DIR = os.path.dirname(__file__)
 rootDir = os.sep.join(WORKING_DIR.split(os.sep)[:-1])
@@ -115,14 +116,23 @@ def setTodo(name, task, value):
 def row2tasks(name, row):
 	for task in Index.getTasks(name):
 		# Get Values
+		artistValue = str(row["artist" + task.lower()].text)
+		artist = re.findall("\w+\s*\w+", artistValue)
+
+
 		status = row["status" + task.lower()].text
-		artist = row["artist" + task.lower()].text
 		todo   = row["todo"   + task.lower()].text
+		mandays= row["mandays"+ task.lower()].text
+
+		if name == "F_23720" and task == "3D":
+			print artistValue
+
 
 		# Set Values
-		Index.setValue(name, task + "_Status", status if status else "", saveData=False)
-		Index.setValue(name, task + "_Artist", artist if artist else "", saveData=False)
-		Index.setValue(name, task + "_Todo",   todo   if todo   else "", saveData=False)
+		Index.setValue(name, task + "_Status", status  if status  else "", saveData=False)
+		Index.setValue(name, task + "_Artist", artist  if artist  else "", saveData=False)
+		Index.setValue(name, task + "_Todo",   todo    if todo    else "", saveData=False)
+		Index.setValue(name, task + "_Mandays",mandays if mandays else "", saveData=False)
 	return True
 
 
@@ -181,6 +191,7 @@ def loadShots():
 			row2shot(row.custom)
 	print "[SYNC-GOOGLE] Load Shots -- done --"
 
+
 def loadAssets():
 	print "[SYNC-GOOGLE] Load Assets -- start --"
 	Type = "Assets"
@@ -198,6 +209,11 @@ def loadAssets():
 
 
 def load():
+
+	Index.clear()
+	Index.reWriteOverviewJagon()
+
+
 	loadAssets()
 	loadShots()
 	Index.save(Index.data)

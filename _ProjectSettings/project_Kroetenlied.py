@@ -38,27 +38,25 @@ Favorites = []
 ##
 
 # Project Settings
-projectName = 'Jagon'
+projectName = 'Kroetenlied'
 
-projectRoot = 'V:' if sys.platform.startswith("win") else '/ln/Jagon'
+projectRoot = 'N:'
 
 
 # HelperFolders
-_folderSoftware = projectRoot + "/090_Software"
-_folderPipeline = projectRoot + "/090_Software/Intern"
+_folderSoftware = projectRoot + "/060_Software"
+_folderPipeline = projectRoot + "/060_Software/Kroetenlied_Pipeline"
 
-Settings_User = _folderPipeline + '/vuPipelineOverview_Settings/user_' + getpass.getuser() + '.py'
+Settings_User = _folderPipeline + '/vuSceneSelector_Settings/user_' + getpass.getuser() + '.py'
 
 # Types
-Types = ['Assets', 'Shots']
+Types = ['Assets', 'Photoscan', 'Shots']
 
-Assets_GroupLabel = 'Group'
-Assets_FolderTemplate = projectRoot + '/045_Assets/%(NUM)s_%(NAME)s/%(TASK_NUM)s_%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_WORK'
-Assets_FolderOUT = projectRoot + '/045_Assets/%(NUM)s_%(NAME)s/%(TASK_NUM)s_%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_OUT'
+Asset_FolderTemplate		= projectRoot + "/045_Production_Film/3D/ASSETS/Charakter/%(NUM)s_%(NAME)s/%(TASK_NUM)s_%(CODE)s_%(TASK_NAME)s"
+Shot_FolderTemplate		= projectRoot + "/045_Production_Film/3D/SHOTS/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s"
 
-Shots_GroupLabel = 'Sequence'
-Shots_FolderTemplate = projectRoot + '/050_Shots/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_WORK'
-Shots_FolderOUT = projectRoot + '/050_Shots/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_OUT'
+Asset_FolderOUT			= Asset_FolderTemplate		+ "/%(CODE)s_%(TASK_NAME)s_OUT"
+Shot_FolderOUT			= Shot_FolderTemplate		+ "/%(CODE)s_%(TASK_NAME)s_PLAYBLAST"
 
 
 # Tasks
@@ -68,14 +66,15 @@ COLOR_ICON_RED = '#ff4040'
 COLOR_ICON_YELLOW = '#ffe100'
 COLOR_ICON_GREENCLEAN = '#00ff00'
 COLOR_ICON_GREEN = '#26802b'
-COLOR_ICON_REVIEW = '#0d8de7'
 
 STATI = []
-STATI += [{"value": "",   "label": "inactive",		"color": COLOR_ICON_INACTIVE}]
-STATI += [{"value": "0",  "label": "untouched",		"color": COLOR_ICON_RED}]
-STATI += [{"value": "0.5","label": "in progress",	"color": COLOR_ICON_YELLOW}]
-STATI += [{"value": "0.75","label": "review", 		"color": COLOR_ICON_REVIEW}]
-STATI += [{"value": "1",  "label": "done",			"color": COLOR_ICON_GREEN}]
+STATI += [{"value": "hld", "label": "On Hold", 			"color": COLOR_ICON_INACTIVE}]
+STATI += [{"value": "wtg", "label": "Waiting to Start", "color": COLOR_ICON_WAIT}]
+STATI += [{"value": "rdy", "label": "Ready to Start",   "color": COLOR_ICON_RED}]
+STATI += [{"value": "ip",  "label": "In Progress",      "color": COLOR_ICON_YELLOW}]
+STATI += [{"value": "rev", "label": "Pending Review",   "color": COLOR_ICON_GREENCLEAN}]
+STATI += [{"value": "fin", "label": "Final",            "color": COLOR_ICON_GREEN}]
+
 
 # TASKS_WITHOUT_ICON
 TASKS_WITHOUT_ICON = ['SLAPCOMP', 'COOKIE', 'BS', 'BND']
@@ -89,8 +88,8 @@ TASKS_WITHOUT_ICON = ['SLAPCOMP', 'COOKIE', 'BS', 'BND']
 #
 
 # SyncMode
-syncMode = 'Google'
-syncFolder = _folderPipeline + '/vuPipelineOverview_Settings/syncTasks'
+syncMode = 'Shotgun'
+syncFolder = _folderPipeline + '/vuSceneSelector_Settings/syncTasks'
 
 # Time to wait between 2 TimeStamp-Checks
 REFRESH_INTERVALL = 0.01
@@ -106,17 +105,18 @@ REFRESH_INTERVALL = 0.01
 # HEADER_IMG_SHOTS
 Graphics_FolderHeaderImages = _folderSoftware + '/Assets/Images/ShotThumbs/'
 # ICON
-Application_Icon = 'V:/090_Software/Assets/Icons/Icon_Jagon.png'
+Application_Icon = 'N:/060_Software/Kroetenlied_Pipeline/graphics/Icons/Kroetenlied_Icon.ico'
 
 # COLOR_HOVER
-COLOR_HOVER = '#953636'
+#COLOR_HOVER = '#953636'
+COLOR_HOVER = '#4d805e'
 # COLOR_ERROR_EMPTYLIST
 COLOR_ERROR_EMPTYLIST = '#cc4747'
 
 # COLOR_BACKGROUND
 COLOR_BACKGROUND = '#444444'
 # COLOR_SELECTION
-COLOR_SELECTION = '#953636'
+COLOR_SELECTION = COLOR_HOVER
 # COLOR_TEXT
 COLOR_TEXT = '#c8c8c8'
 # COLOR_TEXT_GREY
@@ -133,15 +133,13 @@ COLOR_LIST = '#333333'
 # MAYA_BATCH
 MAYA_BATCH = _folderPipeline + '/startMaya.bat'
 # EMPTY_SCENE
-EMPTY_SCENE = _folderPipeline + '/vuPipelineOverview/vuSceneSelector/emptyScene.mb'
+EMPTY_SCENE = _folderPipeline + '/vuSceneSelector/_ProjectSettings/emptyScene.mb'
 # NUKE_BATCH
 NUKE_BATCH = _folderPipeline + '/startNuke9.bat'
 # MUDBOX_BATCH
 MUDBOX_BATCH = '"C:/ProgrammFiles/AutodeskMudbox2015/mudbox.exe"'
 # HOUDINI_BATCH
 HOUDINI_BATCH = _folderPipeline + '/startHoudini.bat'
-SYNTHEYES_BATCH = _folderPipeline + '/startSynthEyes.bat'
-
 
 
 
@@ -157,6 +155,6 @@ showShotTaskStatusIcons = True
 
 
 # ADMINS
-ADMINS = ['vullmann', 'ffricke', 'jweiss']
+ADMINS = ['vullmann', 'ksaleh', 'slanger']
 
-isAdmin = False#getpass.getuser() in ADMINS
+isAdmin = getpass.getuser() in ADMINS

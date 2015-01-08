@@ -80,7 +80,7 @@ def getSequences(path, menu):
 	foundSomething = False
 	items = []
 	if os.path.isdir(path):
-		for fileItem in scandir.scandir(path):
+		for fileItem in sorted(scandir.scandir(path)):
 			foundSomething = True
 			fileName  = fileItem.name
 			filePath  = path + "/" + fileName

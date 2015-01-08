@@ -1,15 +1,23 @@
-#import re
 import os
 import cPickle as pickle
 import re
+import time
 
 DB_FILENAME = os.path.splitext(__file__)[0] + ".p"
+DB_FILENAME = DB_FILENAME.replace("\\", os.sep)
 data = None
 
 def load():
 	global data
-	data = pickle.load( open( DB_FILENAME, "r" ) )
-	return data
+	for i in range(20):
+		try:
+			with open( DB_FILENAME, "r" ) as dbFile:
+				data = pickle.load(dbFile)
+			return data
+		except Exception, e:
+			print "[INDEX-ERROR] Nr.:", i, e
+			time.sleep(0.1)
+			pass
 
 def clear():
 	print "[INDEX] Delte all Data!!!"
@@ -34,8 +42,24 @@ def reWriteOverview():
 	data["Overview"]["Shot"] = {}
 	data["Overview"]["Shot"]["Tasks"] = []
 	data["Overview"]["Shot"]["Tasks"] = [('010', 'ANIM'), ('020', 'LIGHT'), ('030', 'COMP')]
+	#save(data)
 
 
+def reWriteOverviewJagon():
+	if not data: load()
+
+	data["Overview"] = {}
+	data["Overview"]["lastSync"] = ""
+	data["Overview"]["Types"] = []
+
+	# Get Tasks and add them
+	data["Overview"]["Types"] += ["Assets", "Shots"]
+	data["Overview"]["Assets"] = {}
+	data["Overview"]["Assets"]["Tasks"] = []
+	data["Overview"]["Assets"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('040', 'SHD')]
+	data["Overview"]["Shots"] = {}
+	data["Overview"]["Shots"]["Tasks"] = []
+	data["Overview"]["Shots"]["Tasks"] = [('010', 'TRACK'), ('020', 'MATTEPAINT'), ("025", "3D"), ('030', 'ANIM'), ("040", "SIM"), ("045", "SFS"), ("050", "LIGHT"), ("060", "COMP")]
 	#save(data)
 
 
@@ -127,14 +151,26 @@ def getArtists(filterType=None, filterShot=None):
 
 	# ShotNames to ArtistNames
 	for name in names:
-		artists += getValue(name, "*_Artist")
+		value = getValue(name, "*_Artist")
+
+
+		if "vullmann" in value:
+			print name
+
+		if type(value) == list:
+			artists += value
+		else:
+			artists += [value]
 
 	# Handle this somewhere else?
+	"""
 	tmp = []
 	for name in artists:
 		tmp += re.findall("\w+\s*\w+", name)
-
-	return sorted(list(set(tmp)))
+	"""
+	#return []
+	#return artists
+	return sorted(list(set(artists)))
 
 
 
@@ -204,7 +240,17 @@ def getValue(name, attr):
 
 	if "*" in attr:
 		attrs = getAttrs(name, attr)
-		return [getValue(name, attrName) for attrName in attrs]
+
+		tmp = []
+		for attr in attrs:
+			value = getValue(name, attr)
+
+			if type(value) == list:
+				tmp += value
+			else:
+				tmp += [value]
+
+		return tmp
 		#return [data["items"][name][attrName] for attrName in attrs]
 
 		# Return as Dict?
@@ -233,9 +279,9 @@ def getValue(name, attr):
 
 
 def save(data):
-	dbFile = open(DB_FILENAME, "w")
-	pickle.dump(data, dbFile)
-	dbFile.close()
+	with open(DB_FILENAME, "w") as dbFile:
+		pickle.dump(data, dbFile)
+
 
 
 def setValue(name, attr, value, saveData=True):
@@ -290,7 +336,7 @@ if __name__ == '__main__':
 	#print getGroups("Asset")
 
 	#print data["items"]["A010"]
-	print data["items"]["Svobodan"]
+	#print data["items"]["Svobodan"]
 
 	#reWriteOverview()
 
@@ -298,8 +344,17 @@ if __name__ == '__main__':
 
 	#shots = getNames(Filter=[("Martin", "in", "*_Artist")])
 	#print len(shots), shots
+	#print data["items"]["Z910"]["*_Artist"]
+	#print getValue("Z910", "*_Artist")
 
-	#print getArtists()
+	print getTypes()
+	print data["Overview"]
+
+	#for artist in getArtists():
+	#	print artist
+
+	#print getValue("F_23720", "3D_Artist")
+	#print data["items"]["F_23720"]["3D_Artist"]
 	#print getArtists(filterShot="E_18400")
 
 

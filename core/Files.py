@@ -56,6 +56,11 @@ def openScene(path):
 	ext = os.path.splitext(path)[1]
 
 	print "[Core] openScenePath: " + path
+	if ext == ".sni":
+		print "Start Syntheses", SETTINGS["SYNTHEYES_BATCH"]
+		os.system(SETTINGS["SYNTHEYES_BATCH"] + " " + path)
+		return "Open Synthesis: " + path
+
 	if ext == ".mb" or ext == ".ma":
 		os.system(SETTINGS["MAYA_BATCH"] + " " + path)
 		return "Open MayaScene: " + path

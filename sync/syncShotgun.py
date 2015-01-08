@@ -91,59 +91,6 @@ def sg_connect():
 
 
 
-
-"""
-def createService():
-	# TODO: Only at FilmAK
-	if sys.platform.startswith("win"):
-		os.environ["http_proxy"] = "http://quake:3128"
-		os.environ["https_proxy"] = "https://quake:3128"
-
-	spr_client = gdata.spreadsheet.service.SpreadsheetsService()
-	spr_client.email = 'vuPipelineFilmakademie@gmail.com'
-	spr_client.password = 'filmaka2014'
-	spr_client.ProgrammaticLogin()
-	return spr_client
-
-
-def findSheet(spr_client, Type):
-	sheets = spr_client.GetWorksheetsFeed(SPREADSHEET_KEY)
-	for sheet in sheets.entry:
-		if sheet.title.text == Type:
-			return sheet.id.text.split("/")[-1]
-	return None
-
-
-def findCell(spr_client, sheetID, name, nameCol, column):
-	titles = {}
-	tarRow, tarCol = None, None
-
-	cells = spr_client.GetCellsFeed(SPREADSHEET_KEY, sheetID).entry
-	for cell in cells:
-		col = cell.cell.col
-		row = cell.cell.row
-		val = cell.cell.text
-
-		if row == "1":
-			# Store Title/ColNum-Dict
-			titles[val] = col
-
-			# Find TargetColNum
-			if val == column:
-				tarCol = col
-
-		else:
-			# Find Target RowNum
-			if col == titles[nameCol] and val == name:
-				tarRow = row
-
-
-		if tarCol and tarRow:
-			print "CellFound: ", tarCol, tarRow
-			return (tarRow, tarCol)
-	return False, False
-"""
-
 ##########################
 #
 #	SetValues
@@ -170,14 +117,33 @@ def setValue(name, attr, value):
 	else:
 		print "[SyncError] SheetID not found"
 
+
+'''
+
+def getShotID(sg, name):
+	filters = [["code", "is", name]]
+	name = sg.find_one("Shot" ,filters)
+	return name["id"] if name	else None
+
+
+def getTaskID(sg, shotName, taskName):
+	shotID = getShotID(sg, shotName)
+
+	filters = [['entity', 'is', {'type':'Shot', 'id':shotID}], ['content', 'is', taskName]]
+	task = sg.find_one("Task", filters)
+	return task["id"] if task else None
+
+
 def setStatus(name, task, value):
-	"""Wrapper to avoid mapping of ColumNames"""
-	setValue(name, "Status" + task.upper(), value)
+	sg = sg_connect()
+	taskID = getTaskID(sg, name, mappingsLocal2ShotGun[task])
+	sg.update("Task", taskID, {"sg_status_list":value})
+
 
 def setTodo(name, task, value):
-	"""Wrapper to avoid mapping of ColumNames"""
-	setValue(name, "ToDo" + task.upper(), value)
-'''
+	sg = sg_connect()
+	taskID = getTaskID(sg, name, mappingsLocal2ShotGun[task])
+	sg.update("Task", taskID, {"sg_description":value})
 
 
 ##########################
@@ -233,17 +199,21 @@ def loadTasks():
 	''' Load All Tasks form ShotGun'''
 	sg = sg_connect()
 
-	tasks = sg.find("Task", [PROJECT_FILTER], ["content", "entity", "sg_status_list"])
+	tasks = sg.find("Task", [PROJECT_FILTER], ["content", "entity", "sg_status_list", "sg_description", "task_assignees"])
 
 	for task in tasks:
 		name = task["entity"]["name"].split("_")[-1]
 		taskNameSG = task["content"]
-		status = task["sg_status_list"]
+
+		status	= task["sg_status_list"]
+		descr	= task["sg_description"]
+		artists	= [artist["name"] for artist in task["task_assignees"]]
 
 		if taskNameSG in mappingsShotGun2Local:
 			taskName = mappingsShotGun2Local[taskNameSG]
-			Index.setValue(name, taskName + "_Todo", "")
+			Index.setValue(name, taskName + "_Todo", descr)
 			Index.setValue(name, taskName + "_Status", status)
+			Index.setValue(name, taskName + "_Artist", artists)
 
 
 
@@ -260,6 +230,8 @@ def load():
 if __name__ == '__main__':
 	pass
 	load()
+	#setStatus("Z910", "ANIM", "fin")
+	#setTodo("Z910", "ANIM", "Test123")
 
 	#print ("Svobodan")
 

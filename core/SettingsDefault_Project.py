@@ -85,17 +85,12 @@ COLOR_BORDER = '#272727'
 COLOR_LIST = '#333333'
 
 
-# MAYA_BATCH
 MAYA_BATCH = '<folderPipeline>/startMaya.bat'
-# EMPTY_SCENE
 EMPTY_SCENE = '<folderPipeline>/vuPipelineOverview/vuSceneSelector/emptyScene.mb'
-# NUKE_BATCH
 NUKE_BATCH = '<folderPipeline>/startNuke9.bat'
-# MUDBOX_BATCH
-MUDBOX_BATCH = '"C:/ProgrammFiles/AutodeskMudbox2015/mudbox.exe"'
-# HOUDINI_BATCH
+MUDBOX_BATCH = '"C:/ProgrammFiles/Autodesk/Mudbox2015/mudbox.exe"'
 HOUDINI_BATCH = '<folderPipeline>/startHoudini.bat'
-
+SYNTHEYES_BATCH = '<folderPipeline>/startSynthEyes.bat'
 
 
 # scanSubFolders

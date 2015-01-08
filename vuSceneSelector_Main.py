@@ -17,6 +17,7 @@ if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
 	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
 
 
 
@@ -48,7 +49,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "3.4 DEV"
+VERSION_MINOR = "4"
 DEBUG = os.getenv("DEBUG")
 
 
