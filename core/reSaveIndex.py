@@ -23,7 +23,7 @@ Task["Todo"] = ""
 Task["Artist"] = ""
 """
 
-oldData = pickle.load( open( FILENAME_OLD, "r" ) )
+#oldData = pickle.load( open( FILENAME_OLD, "r" ) )
 
 
 DATA = {}
@@ -76,7 +76,7 @@ for Type in DATA["Overview"]["Types"]:
 		DATA["items"][name] = Entity
 """
 
-
+DATA = []
 newFile = open(FILENAME_NEW, "w")
 pickle.dump(DATA, newFile)
 newFile.close()

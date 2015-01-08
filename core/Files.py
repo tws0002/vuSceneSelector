@@ -36,7 +36,7 @@ def findFiles(path):
 		print "ERROR: Path doesnt exist"
 		return
 
-	if True: #project.scanSubFolders:
+	if SETTINGS["scanSubFolders"]:
 		for root, dirs, files in os.walk(path):
 			for sceneFile in files:
 				if os.path.splitext(sceneFile)[1] in FILE_WHITELIST:

@@ -4,18 +4,20 @@ import os, sys
 
 
 
-WORKING_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
-rootDir = os.sep.join(WORKING_DIR.split(os.sep)[:-3])
-sys.path.append(rootDir)
-os.environ["FOLDER_PIPELINE"] = rootDir
+WORKING_DIR = os.path.dirname(__file__)
+
+if __name__ == '__main__':
+	path = os.sep.join(WORKING_DIR.split(os.sep)[:-1])
+	sys.path.append(path)
 
 
 # Import Modules
-from vuPipelineOverview.vuSceneSelector.core import Settings
-SETTINGS = Settings.Settings()
-from vuPipelineOverview.vuSceneSelector import style
+from core import Settings
+SETTINGS = Settings.SETTINGS
+from ui import style
 
 
+FOLDER_GRAPHICS = os.sep.join(WORKING_DIR.split(os.sep)[:-1]) + "_Settings"
 
 
 
@@ -31,7 +33,7 @@ class Header(QtGui.QWidget):
 		# Header Image
 		self.image = QtGui.QLabel("Test")
 		self.image.setStyleSheet("border: 1px solid " + style.COLOR_BORDER)
-		self.image.setPixmap(QtGui.QPixmap(SETTINGS["GRAPHICS"] + "Header_Kroetenlied.png"))
+		self.image.setPixmap(QtGui.QPixmap(FOLDER_GRAPHICS + "/Header_Kroetenlied.png"))
 
 
 		#########################

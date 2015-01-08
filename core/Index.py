@@ -11,6 +11,33 @@ def load():
 	data = pickle.load( open( DB_FILENAME, "r" ) )
 	return data
 
+def clear():
+	print "[INDEX] Delte all Data!!!"
+	data = {}
+	data["Overview"] = {}
+	data["items"] = {}
+	save(data)
+
+
+def reWriteOverview():
+	if not data: load()
+
+	data["Overview"] = {}
+	data["Overview"]["lastSync"] = ""
+	data["Overview"]["Types"] = []
+
+	# Get Tasks and add them
+	data["Overview"]["Types"] += ["Asset", "Shot"]
+	data["Overview"]["Asset"] = {}
+	data["Overview"]["Asset"]["Tasks"] = []
+	data["Overview"]["Asset"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('040', 'SHD')]
+	data["Overview"]["Shot"] = {}
+	data["Overview"]["Shot"]["Tasks"] = []
+	data["Overview"]["Shot"]["Tasks"] = [('010', 'ANIM'), ('020', 'LIGHT'), ('030', 'COMP')]
+
+
+	#save(data)
+
 
 def getFilter(parts):
 	attr	= parts[2]
@@ -189,9 +216,11 @@ def getValue(name, attr):
 		"""
 
 	if name in data["items"]:
-		return data["items"][name][attr]
-	else:
-		return None
+		if attr in data["items"][name]:
+			return data["items"][name][attr]
+
+	print "[INDEX] Error", name, attr
+	return None
 
 
 
@@ -201,6 +230,8 @@ def getValue(name, attr):
 #	setValues
 #
 #
+
+
 def save(data):
 	dbFile = open(DB_FILENAME, "w")
 	pickle.dump(data, dbFile)
@@ -211,11 +242,13 @@ def setValue(name, attr, value, saveData=True):
 	if not data: load()
 
 	#print "SaveValue", attr, value, type(value)
+	if value == None:
+		value = ""
 
 	if name in data["items"]:
 		data["items"][name][attr] = value
 	else:
-		print "[INDEX] New Shot?", name
+		print "[INDEX] New Shot/Asset?", name
 		data["items"][name] = {}
 		data["items"][name][attr] = value
 
@@ -244,17 +277,30 @@ def Tests():
 
 
 if __name__ == '__main__':
-	pass
-	load()
+	if not data: load()
 
-	Tests()
+	#x = getValue("D530", "")
+	#print x, type(x)
+	#print data["items"]["F410"]
+	#print getValue("F410", "Type")
+
+	#print getNames()
+	#print getTypes()
+	#print getGroups("Shot")
+	#print getGroups("Asset")
+
+	#print data["items"]["A010"]
+	print data["items"]["Svobodan"]
+
+	#reWriteOverview()
+
+	#Tests()
 
 	#shots = getNames(Filter=[("Martin", "in", "*_Artist")])
 	#print len(shots), shots
 
 	#print getArtists()
-	print getValue("E_18400", "*_Artist")
-	print getArtists(filterShot="E_18400")
+	#print getArtists(filterShot="E_18400")
 
 
 	#print getValue("Z_90100", "*_Artist")

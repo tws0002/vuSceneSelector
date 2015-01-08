@@ -7,6 +7,7 @@
 
 selType = ''
 selArtist = ''
+OpenScene = ''
 
 ShotsFilterType = ''
 ShotsGroup = ''

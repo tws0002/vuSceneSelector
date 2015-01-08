@@ -14,6 +14,22 @@ FOLDER_ICONS = os.path.dirname(__file__).replace(os.sep, "/") + "/graphics/icons
 #
 #		Helpers
 
+
+def createMayaDragAnDropScene(sceneFile):
+	fileName = os.getenv("TMP") + "/TMP.ma"
+
+	content = """requires maya "2014";
+createNode transform -n "vuPipeline_Test";
+	addAttr -ci true -sn "nts" -ln "notes" -dt "string";
+	setAttr ".nts" -type "string" "%(sceneFile)s";""" % {"sceneFile":sceneFile.replace("\\", "/")}
+
+	with open(fileName, 'w') as f:
+		f.write(content)
+
+	return fileName
+
+
+
 def getFile_LastModify(path):
 	time = os.path.getmtime(path)
 	return datetime.datetime.fromtimestamp(time).strftime('%d.%m.%Y %H:%M')
@@ -265,6 +281,7 @@ class TableScenes(ListTemplate.TableTemplate):
 #		Mouse Drag
 #
 
+
 	def mouseMoveEvent(self, event):
 		if not self.rowCount():
 			return event.ignore()
@@ -280,11 +297,13 @@ class TableScenes(ListTemplate.TableTemplate):
 					self.item(r, c).setBackground(QtGui.QBrush(QtGui .QColor(style.COLOR_LIST)))
 
 
-		#if self.doDrag:
 		# Update Data
 		sceneFile = self.window.sceneFolder + "\\" + self.window.selScene
-		self.window.values["OpenScene"] = sceneFile
-		Files.storeData(self.window.values)
+		#self.window.values["OpenScene"] = sceneFile
+		#Files.storeData(self.window.values)
+
+		SETTINGS["OpenScene"] = sceneFile
+		SETTINGS.save()
 
 		# PrePare MineData
 		data = QtCore.QMimeData()
@@ -293,7 +312,7 @@ class TableScenes(ListTemplate.TableTemplate):
 		if ext == ".nk":
 			url = QtCore.QUrl.fromLocalFile(sceneFile)
 		elif ext == ".ma" or ext == ".mb":
-			url = QtCore.QUrl.fromLocalFile(SETTINGS["EMPTY_SCENE"])
+			url = QtCore.QUrl.fromLocalFile(createMayaDragAnDropScene(sceneFile))
 		else:
 			err = "[Error] Unsupported FileType for DragAndDrop"
 			return
