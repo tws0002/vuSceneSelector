@@ -153,10 +153,6 @@ def getArtists(filterType=None, filterShot=None):
 	for name in names:
 		value = getValue(name, "*_Artist")
 
-
-		if "vullmann" in value:
-			print name
-
 		if type(value) == list:
 			artists += value
 		else:

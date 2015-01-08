@@ -124,10 +124,6 @@ def row2tasks(name, row):
 		todo   = row["todo"   + task.lower()].text
 		mandays= row["mandays"+ task.lower()].text
 
-		if name == "F_23720" and task == "3D":
-			print artistValue
-
-
 		# Set Values
 		Index.setValue(name, task + "_Status", status  if status  else "", saveData=False)
 		Index.setValue(name, task + "_Artist", artist  if artist  else "", saveData=False)
