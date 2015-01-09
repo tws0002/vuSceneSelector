@@ -16,8 +16,8 @@ SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
-	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
 
 
 
@@ -49,7 +49,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "4.2"
+VERSION_MINOR = "4.3"
 DEBUG = os.getenv("DEBUG")
 
 
@@ -532,7 +532,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 	def updateTasks(self):
 		"Update Task-List"
-		self.listTasks.setItems(Index.getTasks(self.selType))
+		self.listTasks.setItems([task for task in Index.getTasks(self.selType) if task not in SETTINGS["TASKS_WITHOUT_PATH"]])
 		self.listTasks.setSelection2(self.selTask)
 
 

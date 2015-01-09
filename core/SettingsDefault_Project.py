@@ -45,7 +45,7 @@ STATI += [{"value": "1",  "label": "done",        "color": COLOR_ICON_GREEN}]
 
 # TASKS_WITHOUT_ICON
 TASKS_WITHOUT_ICON = ['SLAPCOMP', 'COOKIE', 'BS', 'BND']
-
+TASKS_WITHOUT_PATH = ['BLOCK']
 
 
 # SyncMode

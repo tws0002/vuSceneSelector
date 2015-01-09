@@ -78,6 +78,7 @@ STATI += [{"value": "fin", "label": "Final",            "color": COLOR_ICON_GREE
 
 # TASKS_WITHOUT_ICON
 TASKS_WITHOUT_ICON = ['SLAPCOMP', 'COOKIE', 'BS', 'BND']
+TASKS_WITHOUT_PATH = ['BLOCK']
 
 
 

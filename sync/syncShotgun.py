@@ -64,6 +64,7 @@ mappingsLocal2ShotGun["SHD"] = "06_Shading"
 """
 
 
+mappingsLocal2ShotGun["BLOCK"] = "Blocking"
 mappingsLocal2ShotGun["ANIM"] = "Animation"
 mappingsLocal2ShotGun["LIGHT"] = "Lighting"
 mappingsLocal2ShotGun["COMP"] = "Compositing"
@@ -219,27 +220,30 @@ def loadTasks():
 
 		if taskNameSG in mappingsShotGun2Local:
 			taskName = mappingsShotGun2Local[taskNameSG]
-			Index.setValue(name, taskName + "_Todo", descr)
-			Index.setValue(name, taskName + "_Status", status)
-			Index.setValue(name, taskName + "_Artist", artists)
+			Index.setValue(name, taskName + "_Todo", descr, saveData=False)
+			Index.setValue(name, taskName + "_Status", status, saveData=False)
+			Index.setValue(name, taskName + "_Artist", artists, saveData=False)
 
 
 
 def load():
 	Index.clear()
-	loadAssets()
 
+	# Write Data
+	Index.reWriteOverviewKroetenlied()
+	loadAssets()
 	loadTasks()
 
-	Index.reWriteOverview()
+	# Save
 	Index.save(Index.data)
+
 
 
 if __name__ == '__main__':
 	pass
-	#load()
+	load()
 	#setStatus("Z910", "ANIM", "fin")
-	setStatus("TestCharacter", "SHD", "ip")
+	#setStatus("TestCharacter", "SHD", "ip")
 	#setTodo("Z910", "ANIM", "Test123")
 
 	#print ("Svobodan")

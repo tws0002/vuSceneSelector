@@ -21,14 +21,15 @@ def load():
 
 def clear():
 	print "[INDEX] Delte all Data!!!"
+	global data
 	data = {}
 	data["Overview"] = {}
 	data["items"] = {}
-	save(data)
+	#save(data)
 
 
-def reWriteOverview():
-	if not data: load()
+def reWriteOverviewKroetenlied():
+	#if not data: load()
 
 	data["Overview"] = {}
 	data["Overview"]["lastSync"] = ""
@@ -41,7 +42,7 @@ def reWriteOverview():
 	data["Overview"]["Asset"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('040', 'SHD')]
 	data["Overview"]["Shot"] = {}
 	data["Overview"]["Shot"]["Tasks"] = []
-	data["Overview"]["Shot"]["Tasks"] = [('010', 'ANIM'), ('020', 'LIGHT'), ('030', 'COMP')]
+	data["Overview"]["Shot"]["Tasks"] = [("005", "BLOCK"), ('010', 'ANIM'), ('020', 'LIGHT'), ('030', 'COMP')]
 	#save(data)
 
 
@@ -275,6 +276,7 @@ def getValue(name, attr):
 
 
 def save(data):
+	#os.remove(DB_FILENAME)
 	with open(DB_FILENAME, "w") as dbFile:
 		pickle.dump(data, dbFile)
 
