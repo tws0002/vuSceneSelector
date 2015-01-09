@@ -187,8 +187,12 @@ def showHelp(widget):
 """
 
 
+
 def show_WebSite(url):
 	webbrowser.open(url,new=2)
+
+def showHelp():
+	show_WebSite(URL_SCENESELECTOR_ROOT)
 
 
 def openMenu(event=None):
@@ -199,14 +203,13 @@ def openMenu(event=None):
 	#action = ctxtMenue.addAction("Quick Help")
 
 	action = ctxtMenue.addAction("WikiPage")
-	action.connect(action, QtCore.SIGNAL("triggered()"), lambda: show_WebSite(URL_SCENESELECTOR_ROOT))
-	action.setShortcut('F1')
+	action.connect(action, QtCore.SIGNAL("triggered()"), showHelp)
+	action.setShortcut('F2')
 
 	ctxtMenue.addSeparator()
 
 	action = ctxtMenue.addAction("BugReport")
 	action.connect(action, QtCore.SIGNAL("triggered()"), lambda: show_WebSite(URL_BUGREPORT))
-	action.setShortcut('Strg+Alt+Del+F4+L')
 
 
 

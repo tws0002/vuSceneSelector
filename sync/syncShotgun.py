@@ -120,29 +120,37 @@ def setValue(name, attr, value):
 
 '''
 
-def getShotID(sg, name):
+def getEntityID(sg, Type, name):
 	filters = [["code", "is", name]]
-	name = sg.find_one("Shot" ,filters)
+	name = sg.find_one(Type ,filters)
 	return name["id"] if name	else None
 
 
-def getTaskID(sg, shotName, taskName):
-	shotID = getShotID(sg, shotName)
+def getTaskID(sg, Type, shotName, taskName):
+	shotID = getEntityID(sg, Type, shotName)
 
-	filters = [['entity', 'is', {'type':'Shot', 'id':shotID}], ['content', 'is', taskName]]
+	filters = [['entity', 'is', {'type':Type, 'id':shotID}], ['content', 'is', taskName]]
 	task = sg.find_one("Task", filters)
 	return task["id"] if task else None
 
 
 def setStatus(name, task, value):
+	Type = Index.getType(name)
+
+	if Type == "Asset":
+		name = Index.getValue(name, "Num") + "_" + name
+
 	sg = sg_connect()
-	taskID = getTaskID(sg, name, mappingsLocal2ShotGun[task])
+	taskID = getTaskID(sg, Type, name, mappingsLocal2ShotGun[task])
+	print "setStatus", name, task, value, taskID
 	sg.update("Task", taskID, {"sg_status_list":value})
 
 
 def setTodo(name, task, value):
+	Type = Index.getType(name)
+
 	sg = sg_connect()
-	taskID = getTaskID(sg, name, mappingsLocal2ShotGun[task])
+	taskID = getTaskID(sg, Type, name, mappingsLocal2ShotGun[task])
 	sg.update("Task", taskID, {"sg_description":value})
 
 
@@ -229,8 +237,9 @@ def load():
 
 if __name__ == '__main__':
 	pass
-	load()
+	#load()
 	#setStatus("Z910", "ANIM", "fin")
+	setStatus("TestCharacter", "SHD", "ip")
 	#setTodo("Z910", "ANIM", "Test123")
 
 	#print ("Svobodan")

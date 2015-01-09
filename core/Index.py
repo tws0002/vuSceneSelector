@@ -59,7 +59,7 @@ def reWriteOverviewJagon():
 	data["Overview"]["Assets"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('040', 'SHD')]
 	data["Overview"]["Shots"] = {}
 	data["Overview"]["Shots"]["Tasks"] = []
-	data["Overview"]["Shots"]["Tasks"] = [('010', 'TRACK'), ('020', 'MATTEPAINT'), ("025", "3D"), ('030', 'ANIM'), ("040", "SIM"), ("045", "SFS"), ("050", "LIGHT"), ("060", "COMP")]
+	data["Overview"]["Shots"]["Tasks"] = [('010', 'TRACK'), ('020', 'MATTEPAINT'), ("025", "3D"), ('030', 'ANIM'), ("040", "SIM"), ("045", "SFS"), ("050", "LIGHT"), ("055", "SLAPCOMP"), ("060", "COMP")]
 	#save(data)
 
 
@@ -154,8 +154,8 @@ def getArtists(filterType=None, filterShot=None):
 		value = getValue(name, "*_Artist")
 
 		if type(value) == list:
-			artists += value
-		else:
+			artists += [v for v in value if v != ""]
+		elif type(value) == str and value != "":
 			artists += [value]
 
 	# Handle this somewhere else?
@@ -340,16 +340,24 @@ if __name__ == '__main__':
 
 	#shots = getNames(Filter=[("Martin", "in", "*_Artist")])
 	#print len(shots), shots
-	#print data["items"]["Z910"]["*_Artist"]
+	#print data["items"]["Z_90100"]["ANIM_Artist"]
 	#print getValue("Z910", "*_Artist")
 
-	print getTypes()
-	print data["Overview"]
+	#print getTypes()
+	#print data["Overview"]
+	#print getType("A010")
+
+	#print getTasks("Shots")
+	names = getNames()
+
+	for name in names:
+		if getType(name) == "Shots" and "VFX" in getValue(name, "Tags"):
+			print name
 
 	#for artist in getArtists():
 	#	print artist
 
-	#print getValue("F_23720", "3D_Artist")
+	#print getValue("F_23720", "*_Artist")
 	#print data["items"]["F_23720"]["3D_Artist"]
 	#print getArtists(filterShot="E_18400")
 

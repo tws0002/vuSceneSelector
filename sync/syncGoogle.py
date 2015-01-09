@@ -116,8 +116,8 @@ def setTodo(name, task, value):
 def row2tasks(name, row):
 	for task in Index.getTasks(name):
 		# Get Values
-		artistValue = str(row["artist" + task.lower()].text)
-		artist = re.findall("\w+\s*\w+", artistValue)
+		artistValue = row["artist" + task.lower()].text
+		artist = re.findall("\w+\s*\w+", artistValue) if artistValue else None
 
 
 		status = row["status" + task.lower()].text

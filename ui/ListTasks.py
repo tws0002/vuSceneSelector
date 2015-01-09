@@ -83,7 +83,6 @@ def getSequences(path, menu):
 		for fileItem in sorted(scandir.scandir(path), key=lambda x: x.name , reverse=True):
 			foundSomething = True
 			fileName  = fileItem.name
-			filePath  = path + "/" + fileName
 
 			if fileItem.is_dir(): # and self.folderFilter(fileName):
 				items.append(fileItem)
@@ -92,16 +91,18 @@ def getSequences(path, menu):
 		for fileItem in items:
 			fileName = fileItem.name
 			submenu = menu.addMenu(fileName)
+			filePath  = path + "/" + fileName
 
 			addAction_OpenRV(submenu, fileName, filePath)
 			addAction_OpenFolder(submenu, fileName, filePath)
 			submenu.addSeparator()
 
-
+			"""
 			for subFileItem in scandir.scandir(filePath):
 				if subFileItem.is_dir() and subFileItem.name.lower() not in FILTER_FOLDER:
 					subFileName = subFileItem.name
 					addAction_OpenRV(submenu, subFileName, filePath + "/" + subFileName)
+			"""
 	else:
 		print "Fould not found", path
 	return foundSomething

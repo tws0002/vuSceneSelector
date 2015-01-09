@@ -61,7 +61,7 @@ class SettingsFile(object):
 				value = "'" + value + "'"
 
 			# Write new Line
-			f.write(attr + " = " + str(value))
+			f.write(attr + " = " + str(value) + "\n")
 			#out.close()
 		return True
 

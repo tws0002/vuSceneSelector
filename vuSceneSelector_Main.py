@@ -49,7 +49,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "4.1"
+VERSION_MINOR = "4.2"
 DEBUG = os.getenv("DEBUG")
 
 
@@ -517,6 +517,15 @@ class vuSceneSelector(QtGui.QWidget):
 		self.listSeq.setItems(Index.getGroups(self.selType))
 		self.listArtist.setItems(Index.getArtists(self.selType))
 
+		# TMP
+		for i in xrange(self.listArtist.count()):
+			item = self.listArtist.item(i)
+			if item.text() == "Julian":
+				font = QtGui.QFont()
+				font.setStrikeOut(True)
+				item.setFont(font)
+
+
 		for listWidget in self.listWidgetsGroups:
 			listWidget.setSelection2(self.selGroup, setDefault=False)
 
@@ -748,7 +757,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 	def showHelp(self):
 		reload(Help)
-		Help.showHelp(self)
+		Help.showHelp()
 
 
 	def keyPressEvent(self, event):
