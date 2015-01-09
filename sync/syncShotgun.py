@@ -143,8 +143,11 @@ def setStatus(name, task, value):
 
 	sg = sg_connect()
 	taskID = getTaskID(sg, Type, name, mappingsLocal2ShotGun[task])
-	print "setStatus", name, task, value, taskID
-	sg.update("Task", taskID, {"sg_status_list":value})
+	if taskID:
+		print "setStatus", name, task, value, taskID
+		sg.update("Task", taskID, {"sg_status_list":value})
+	else:
+		print "[SYNC-SHOTGUN] ERROR", "taskID not found", name, task
 
 
 def setTodo(name, task, value):
