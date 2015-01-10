@@ -405,6 +405,7 @@ class vuSceneSelector(QtGui.QWidget):
 			SETTINGS.save()
 
 
+
 	def closeEvent(self, event):
 		self.updater.running = False
 		self.saveInterface()

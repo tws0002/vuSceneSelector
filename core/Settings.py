@@ -54,6 +54,8 @@ class SettingsFile(object):
 		if "w" not in self.mode:
 			return False
 
+		print "addOption", attr, value
+
 		# Save File
 		with open(self.filename, 'a') as f:
 			# '' bei Strings
@@ -104,6 +106,7 @@ class Settings(object):
 
 
 	def save(self):
+		print "SAVE 2"
 		"""Save all SettingsFiles"""
 		for settingsFile in self.files:
 			settingsFile.save()
@@ -121,7 +124,7 @@ class Settings(object):
 	def __setitem__(self, attr, value):
 		# Find corret SettingsFile and SetValue there
 		for settingsFile in self.files:
-			if attr in settingsFile.data:
+			if attr in settingsFile.data and "w" in settingsFile.mode:
 				settingsFile.data[attr] = value
 				return True
 
