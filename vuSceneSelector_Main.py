@@ -31,7 +31,7 @@ SETTINGS.load(SETTINGS["Settings_User"])
 # Import Modules
 from core import Index
 from sync import syncTasks
-from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, Help
+from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, Help, ChangeLog
 from adminUtils import adminMainUI
 
 if SETTINGS["projectName"] == "Jagon":
@@ -49,7 +49,8 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "4.3"
+VERSION_MINOR = "4.4"
+VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
 
 
@@ -356,7 +357,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#						#
 		#########################
 		# Window Settings
-		self.setWindowTitle(SETTINGS["projectName"] + " - SceneSelector v0." + VERSION_MAJOR + "." + VERSION_MINOR)
+		self.setWindowTitle(SETTINGS["projectName"] + " - SceneSelector " + VERSION)
 		self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(SETTINGS["Application_Icon"])))
 		self.setStyleSheet(style.STYLE)
 
@@ -395,6 +396,13 @@ class vuSceneSelector(QtGui.QWidget):
 		except:
 			pass
 		self.interactive = True
+
+		self.show()
+
+		if VERSION != SETTINGS["lastVersion"]:
+			self.showChangeLog()
+			SETTINGS["lastVersion"] = VERSION
+			SETTINGS.save()
 
 
 	def closeEvent(self, event):
@@ -759,6 +767,13 @@ class vuSceneSelector(QtGui.QWidget):
 		reload(Help)
 		Help.showHelp()
 
+	def showChangeLog(self):
+		reload(ChangeLog)
+		cl = ChangeLog.ChangeLog()
+		cl.setStyleSheet(style.STYLE)
+		cl.label.setStyleSheet("background-color: " + SETTINGS["COLOR_LIST"])
+		cl.exec_()
+
 
 	def keyPressEvent(self, event):
 		# Left Key
@@ -771,6 +786,9 @@ class vuSceneSelector(QtGui.QWidget):
 
 		elif event.key() == QtCore.Qt.Key_F1:
 			self.showHelp()
+
+		elif event.key() == QtCore.Qt.Key_F2:
+			self.showChangeLog()
 
 		elif event.key() == QtCore.Qt.Key_F8:
 			self.close()
@@ -795,5 +813,5 @@ if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
 
 	window = vuSceneSelector()
-	window.show()
+	#window.show()
 	app.exec_()

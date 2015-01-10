@@ -27,3 +27,4 @@ UI_splitterLists = ''
 UI_splitterVertical = ''
 
 Favorites = []
+lastVersion = "v0.0"
