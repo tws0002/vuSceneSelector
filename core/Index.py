@@ -232,6 +232,12 @@ def getTaskNum(name):
 				return taskNum
 
 
+def getTasksByName(name):
+	"""Used in fuActivty"""
+	Type = getType(name)
+	return getTasks(Type)
+
+
 def getValue(name, attr):
 	if not data: load()
 
@@ -351,10 +357,13 @@ if __name__ == '__main__':
 
 	#print getTasks("Shots")
 	names = getNames()
-
+	names = [name for name in names if "VFX" in getValue(name, "Tags")] # or name.endswith("MASTER")]
+	print names
+	"""
 	for name in names:
 		if getType(name) == "Shots" and "VFX" in getValue(name, "Tags"):
 			print name
+	"""
 
 	#for artist in getArtists():
 	#	print artist

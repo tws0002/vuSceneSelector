@@ -9,25 +9,37 @@ from shotgun_api3 import shotgun
 
 
 sys.path.append("N:/060_Software/Kroetenlied_Pipeline/Kroetenlied")
-import klAssets as Assets
-
-
+#import klAssets as Assets
 from core import Index
+
+
+
+import socket
+domain = socket.getfqdn()
+IS_AKA = domain.endswith(".medianet.animationsinstitut.de")
+
+
+if IS_AKA:
+	os.environ["http_proxy"] = "http://quake:3128"
+	os.environ["https_proxy"] = "https://quake:3128"
+
+
+# TMP Assets.getCode()
+def getCode(name):
+	return name
+
 
 
 # Shotgun Settings
 SERVER_PATH = "http://ai.shotgunstudio.com"
 SCRIPT_NAME = "test_Python"
 SCRIPT_KEY = '1c87c13470d87c51c1a3275ddde9bfb9e9428bc345ed16772451b8df5c972deb'
-PROJECT_FILTER = ['project','is',{'type':'Project','id':122}]
 PROJECT_FILTER = ["project","is",{'type':'Project','id':112, 'name': 'Kroetenlied'}]
 
 FIELDS_ASSET = ["code", "description", "sg_asset_group_1", "sg_asset_type"]
 FIELDS_SHOTS = ["code", "description"]
 
 
-os.environ["http_proxy"] = "http://quake:3128"
-os.environ["https_proxy"] = "https://quake:3128"
 
 
 
@@ -88,7 +100,7 @@ for localName in mappingsLocal2ShotGun:
 #
 
 def sg_connect():
-	return shotgun.Shotgun(SERVER_PATH, SCRIPT_NAME, SCRIPT_KEY, http_proxy="quake:3128")
+	return shotgun.Shotgun(SERVER_PATH, SCRIPT_NAME, SCRIPT_KEY, http_proxy="quake:3128" if IS_AKA else "")
 
 
 
@@ -97,29 +109,6 @@ def sg_connect():
 #	SetValues
 #
 #
-
-'''
-def setValue(name, attr, value):
-	"""Set any Value"""
-	Type = Index.getType(name)
-	nameCol = "ShotNameVFX" if Type == "Shots" else "AssetName"
-
-	spr_client = createService()
-
-	# Find Sheet, than Cell than Udate
-	sheetID = findSheet(spr_client, Type)
-	if sheetID:
-		row, col = findCell(spr_client, sheetID, name, nameCol, attr)
-		if row and col:
-			spr_client.UpdateCell(row, col, value, SPREADSHEET_KEY, sheetID)
-			print "[Sync] Value succesfully updated!"
-		else:
-			print "[SyncError] Cell not found"
-	else:
-		print "[SyncError] SheetID not found"
-
-
-'''
 
 def getEntityID(sg, Type, name):
 	filters = [["code", "is", name]]
@@ -173,7 +162,7 @@ def createAsset(asset):
 	Index.setValue(name, "Type",	"Asset", saveData=False)
 	Index.setValue(name, "Group",	asset["sg_asset_group_1"], saveData=False)
 
-	Index.setValue(name, "Code",		Assets.getCode(name), saveData=False)
+	Index.setValue(name, "Code",		getCode(name), saveData=False)
 	Index.setValue(name, "Num",			asset["code"].split("_")[0], saveData=False)
 	Index.setValue(name, "Description",	asset["description"], saveData=False)
 	return True
@@ -229,22 +218,28 @@ def loadTasks():
 
 
 
-def load():
-	Index.clear()
+def load(force=True):
+	oldData = Index.load()
+
 
 	# Write Data
+	Index.clear()
 	Index.reWriteOverviewKroetenlied()
 	loadAssets()
 	loadTasks()
 
 	# Save
-	Index.save(Index.data)
+	hasChanged = oldData["items"] != Index.data["items"]
+	if force or hasChanged:
+		print "[SYNC-SHOTGUN]", "SaveData!"
+		Index.save(Index.data)
+
 
 
 
 if __name__ == '__main__':
 	pass
-	load()
+	#load(False)
 	#setStatus("Z910", "ANIM", "fin")
 	#setStatus("TestCharacter", "SHD", "ip")
 	#setTodo("Z910", "ANIM", "Test123")

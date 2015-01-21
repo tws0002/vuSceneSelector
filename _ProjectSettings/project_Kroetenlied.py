@@ -56,7 +56,7 @@ Asset_FolderTemplate		= projectRoot + "/045_Production_Film/3D/ASSETS/Charakter/
 Shot_FolderTemplate		= projectRoot + "/045_Production_Film/3D/SHOTS/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s"
 
 Asset_FolderOUT			= Asset_FolderTemplate		+ "/%(CODE)s_%(TASK_NAME)s_OUT"
-Shot_FolderOUT			= Shot_FolderTemplate		+ "/%(CODE)s_%(TASK_NAME)s_PLAYBLAST"
+Shot_FolderOUT			= Shot_FolderTemplate		+ "/%(CODE)s_%(TASK_NAME)s_OUT"
 
 
 # Tasks

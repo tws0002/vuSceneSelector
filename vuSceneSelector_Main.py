@@ -16,8 +16,8 @@ SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
-	SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
+	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
 
 
 
@@ -49,7 +49,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "4.4"
+VERSION_MINOR = "5"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
 
@@ -744,24 +744,41 @@ class vuSceneSelector(QtGui.QWidget):
 
 
 	def switchFocus(self, orig, direction):
-		lists = [self.listType, self.listSeq, self.tableAssets, self.listTasks, self.sceneList]
-
-		if orig not in lists:
-			return False
-
-		# Find Wigdet in Lists:
-		for i, widget in enumerate(lists):
-			if orig == widget:
+		filters = [self.listFilter, self.listSeq, self.listArtist]
+		for filterList in filters:
+			if len(filterList.selectedItems()):
+				currentFilterList = filterList
 				break;
 
-		if direction == "L":
-			lists[i-1].setFocus()
+
+		lists = [self.listType, currentFilterList, self.tableAssets, self.listTasks, self.sceneList]
 
 
-		if direction == "R":
-			if i+1 == len(lists):
-				i = -1
-			lists[i+1].setFocus()
+		if orig not in lists + filters:
+			return False
+
+		if orig in lists and direction in ["L", "R"]:
+			n = lists.index(orig)
+
+			if direction == "L":
+				lists[n-1].setFocus()
+			elif direction == "R":
+				lists[(n+1) % len(lists)].setFocus()
+
+
+		elif orig in filters and direction in ["UP", "DOWN"]:
+			n = filters.index(orig)
+
+			if direction == "UP":
+				targetList = filters[n-1]
+				targetList.setCurrentRow(targetList.count() - 1)
+				targetList.setFocus()
+
+			elif direction == "DOWN":
+				targetList = filters[(n+1)%3]
+				targetList.setCurrentRow(0)
+				targetList.setFocus()
+
 
 
 	def showHelp(self):
@@ -784,6 +801,21 @@ class vuSceneSelector(QtGui.QWidget):
 		# Right or Tab Key
 		elif event.key() in [QtCore.Qt.Key_Right, QtCore.Qt.Key_Tab]:
 			self.switchFocus(self.focusWidget(), "R")
+
+		# Right or Tab Key
+		elif event.key() == QtCore.Qt.Key_Up:
+			self.switchFocus(self.focusWidget(), "UP")
+		elif event.key() == QtCore.Qt.Key_Down:
+			self.switchFocus(self.focusWidget(), "DOWN")
+
+
+		# Enter
+		elif event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
+			print "ENTER"
+			self.sceneList.keyPressEnter()
+
+
+
 
 		elif event.key() == QtCore.Qt.Key_F1:
 			self.showHelp()

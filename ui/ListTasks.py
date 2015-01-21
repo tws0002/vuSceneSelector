@@ -15,6 +15,7 @@ SETTINGS = Settings.SETTINGS
 
 FILTER_EXTENSIONS = (".exr", ".jpg", ".tif")
 FILTER_FOLDER = ["asses", "logs", "main_logs"]
+TASKS_WITH_SUBFOLDERS = ["3D", "SIM", "LIGHT"]
 RV_EXE = "C:\\Program Files\\Tweak\\RV\\bin\\rv.exe"
 
 FOLDER_ICONS = os.path.dirname(__file__).replace(os.sep, "/") + "/graphics/icons"
@@ -73,6 +74,12 @@ def getFolder_OUT(Type, name, task):
 	Vars["NAME"] = name
 	Vars["CODE"] = Index.getValue(name, "Code")
 	path = SETTINGS[Type + "_FolderOUT"] % Vars
+
+	# EXEPTION-Start
+	if SETTINGS["projectName"] == "Kroetenlied" and task == "ANIM":
+		path = path.replace("_OUT", "_PLAYBLAST")
+	# EXEPTION-End
+
 	return path
 
 
@@ -97,12 +104,13 @@ def getSequences(path, menu):
 			addAction_OpenFolder(submenu, fileName, filePath)
 			submenu.addSeparator()
 
-			"""
-			for subFileItem in scandir.scandir(filePath):
-				if subFileItem.is_dir() and subFileItem.name.lower() not in FILTER_FOLDER:
-					subFileName = subFileItem.name
-					addAction_OpenRV(submenu, subFileName, filePath + "/" + subFileName)
-			"""
+
+			if any([task in path for task in TASKS_WITH_SUBFOLDERS]):
+				for subFileItem in scandir.scandir(filePath):
+					if subFileItem.is_dir() and subFileItem.name.lower() not in FILTER_FOLDER:
+						subFileName = subFileItem.name
+						addAction_OpenRV(submenu, subFileName, filePath + "/" + subFileName)
+
 	else:
 		print "Fould not found", path
 	return foundSomething

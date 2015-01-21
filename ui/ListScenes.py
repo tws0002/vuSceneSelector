@@ -260,6 +260,13 @@ class TableScenes(ListTemplate.TableTemplate):
 
 
 
+
+	def openScene(self, row):
+		item = self.item(row, 0)
+		selScene = str(item.text())
+		rtn = Files.openScene(self.window.sceneFolder + "/" + selScene)
+
+
 ##############################################################################################
 #
 #
@@ -269,10 +276,11 @@ class TableScenes(ListTemplate.TableTemplate):
 	def mouseClickRight(self, QPos):
 		self.ctxtShowMenue(QPos)
 
+	def keyPressEnter(self):
+		self.openScene(self.currentRow())
+
 	def mouseClickDouble(self, row, col):
-		item = self.item(row, 0)
-		selScene = str(item.text())
-		rtn = Files.openScene(self.window.sceneFolder + "/" + selScene)
+		self.openScene(row)
 
 
 ##############################################################################################
@@ -298,9 +306,7 @@ class TableScenes(ListTemplate.TableTemplate):
 
 
 		# Update Data
-		sceneFile = self.window.sceneFolder + "\\" + self.window.selScene
-		#self.window.values["OpenScene"] = sceneFile
-		#Files.storeData(self.window.values)
+		sceneFile = self.window.sceneFolder + "/" + self.window.selScene
 
 		SETTINGS["OpenScene"] = sceneFile
 		SETTINGS.save()

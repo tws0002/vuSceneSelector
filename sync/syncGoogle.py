@@ -19,10 +19,12 @@ SPREADSHEET_KEY = "1Jyigwenkykobsq29sh-CSTxZKkpbEmlkUm6s7S9uZZI"
 #	Setup & Helpers
 #
 #
+import socket
+domain = socket.getfqdn()
+IS_AKA = domain.endswith(".medianet.animationsinstitut.de")
 
 def createService():
-	# TODO: Only at FilmAK
-	if sys.platform.startswith("win"):
+	if IS_AKA:
 		os.environ["http_proxy"] = "http://quake:3128"
 		os.environ["https_proxy"] = "https://quake:3128"
 

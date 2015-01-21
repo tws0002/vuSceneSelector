@@ -14,7 +14,8 @@ from core import Settings, Index
 SETTINGS = Settings.SETTINGS
 if SETTINGS["syncMode"] == "Google":
 	from sync import syncGoogle as syncModule
-
+elif SETTINGS["syncMode"] == "Shotgun":
+	from sync import syncShotgun as syncModule
 
 ##############################################################################################
 #

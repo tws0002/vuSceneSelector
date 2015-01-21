@@ -286,7 +286,7 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 		# Filter Names
 		if self.selType == "Shots":
-			names = [name for name in names if "VFX" in Index.getValue(name, "Tags")]
+			names = [name for name in names if "VFX" in Index.getValue(name, "Tags") or name.endswith("MASTER")]
 
 		if self.filterType == "global":
 			# Global Filters

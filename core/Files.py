@@ -75,6 +75,7 @@ def openScene(path):
 
 	if ext == ".hipnc":
 		os.system(SETTINGS["HOUDINI_BATCH"] + " " + path)
+		print SETTINGS["HOUDINI_BATCH"] + " " + path
 		return "Open HoudiniScene: " + path
 
 	return "[ERROR] Dont know how to handle this file. Plase RightClick and select 'Show in Folder'"
