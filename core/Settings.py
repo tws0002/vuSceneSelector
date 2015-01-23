@@ -46,6 +46,10 @@ class SettingsFile(object):
 		for lineNum, line in enumerate(lines):
 			# ReWrite the Line
 			if re.sub("\s+", "", line).split("=")[0] == varName:
+
+				if varName == "lastVersion":
+					print varName + " = " + str(varValue), self.filename
+
 				lines[lineNum] = varName + " = " + str(varValue) + "\n"
 				break;
 		return lines
@@ -84,7 +88,6 @@ class SettingsFile(object):
 		out.close()
 
 
-
 class Settings(object):
 	def __init__(self):
 		self.files = []
@@ -101,6 +104,12 @@ class Settings(object):
 			if not "w" in mode:
 				return False
 			shutil.copy(DEFAULT_USER, filename)
+
+		# Check if Dublicate
+		for sFile in self.files:
+			if sFile.filename == filename:
+				return False
+
 		settingsFile = SettingsFile(filename, mode)
 		self.files = [settingsFile] + self.files # Append at the Front
 
