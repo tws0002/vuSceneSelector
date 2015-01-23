@@ -83,7 +83,7 @@ def getFolder_OUT(Type, name, task):
 	return path
 
 
-def getSequences(path, menu):
+def getSequences(path, menu, asSubMenu=True):
 	foundSomething = False
 	items = []
 	if os.path.isdir(path):
@@ -96,13 +96,17 @@ def getSequences(path, menu):
 
 
 		for fileItem in items:
+
+			# Get Vars
 			fileName = fileItem.name
-			submenu = menu.addMenu(fileName)
 			filePath  = path + "/" + fileName
 
-			addAction_OpenRV(submenu, fileName, filePath)
-			addAction_OpenFolder(submenu, fileName, filePath)
-			submenu.addSeparator()
+			if asSubMenu:
+				submenu = menu.addMenu(fileName)
+				addAction_OpenRV(submenu, fileName, filePath)
+				addAction_OpenFolder(submenu, fileName, filePath)
+			else:
+				addAction_OpenRV(menu, fileName, filePath)
 
 
 			if any([task in path for task in TASKS_WITH_SUBFOLDERS]):
@@ -184,11 +188,23 @@ class ListTasks(ListTemplate.ListTemplate):
 		menu = QtGui.QMenu()
 		menu.setStyleSheet(style.STYLE)
 
-		path = getFolder_OUT(Type, shot, task)
 
-		sequences = getSequences(path, menu)
+
+		path = getFolder_OUT(Type, shot, task)
+		sequences = getSequences(path, menu, SETTINGS["taskList_showOpenFolder"])
 		if not sequences:
 			menu.addAction("no Versions found")
+
+		# Open Work
+		menu.addSeparator()
+		if task == "COMP":
+			path = self.parent.sceneFolder + "/prerender"
+
+			submenue_preRender = menu.addMenu("preRenders")
+			getSequences(path, submenue_preRender, False)
+
+		addAction_OpenFolder(menu, "Open: " + task + "_WORK", self.parent.sceneFolder)
+
 		menu.exec_(event.globalPos())
 
 

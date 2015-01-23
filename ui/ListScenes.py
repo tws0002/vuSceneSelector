@@ -88,6 +88,7 @@ class TableScenesHeader(ListTemplate.TableTemplate):
 		self.setStyleSheet("border: 0px solid black")
 
 		self.connect(self, QtCore.SIGNAL("cellClicked(int, int)"), self.cellClicked)
+		self.connect(table, QtCore.SIGNAL("sortMe"), self.sortItems)
 
 		# Adjust Size
 		self.setColumnCount(3)
@@ -111,19 +112,24 @@ class TableScenesHeader(ListTemplate.TableTemplate):
 		self.setColumnWidth(2, 67)
 
 
-
-	def cellClicked(self, row, column):
-		self.table.sortOrder = 1  - self.table.sortOrder
-		self.table.sortItems(column, self.table.sortOrder)
+	def sortItems(self):
+		print "SORT ITEMS"
+		self.table.sortItems(self.table.sortColumn, self.table.sortOrder)
 
 		for c in xrange(self.table.columnCount()):
-			item = self.cellWidget(row, c)
+			item = self.cellWidget(0, c)
 
-			if c == column:
+			if c == self.table.sortColumn:
 				item.toogle(self.table.sortOrder)
 			else:
 				item.toogle(None)
 
+
+
+	def cellClicked(self, row, column):
+		self.table.sortOrder = 1  - self.table.sortOrder
+		self.table.sortColumn = column
+		self.sortItems()
 
 
 
@@ -145,6 +151,8 @@ class TableScenes(ListTemplate.TableTemplate):
 		super(TableScenes, self).__init__(window)
 		self.window = window
 		self.sortMode = "Name"
+		self.sortColumn = 0
+		self.sortOrder = 1
 
 		# Table Settings
 		self.setColumnCount(3)
@@ -209,6 +217,7 @@ class TableScenes(ListTemplate.TableTemplate):
 
 		self.resizeRows()
 		#self.resizeColumns(auto=True)
+		self.emit(QtCore.SIGNAL("sortMe"))
 
 		# Fixed with, to easly match Header
 		self.setColumnWidth(1, 120)

@@ -29,6 +29,9 @@ Shots_FolderTemplate	= projectRoot + '/050_Shots/%(TASK_NUM)s_%(TASK_NAME)s/%(NA
 Shots_FolderOUT			= projectRoot + '/050_Shots/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_OUT'
 
 
+taskList_showOpenFolder = False
+
+
 # Tasks
 COLOR_ICON_INACTIVE = '#3c3c3c'
 COLOR_ICON_WAIT = '#aa6f6f'

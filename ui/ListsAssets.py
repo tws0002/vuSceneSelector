@@ -359,14 +359,19 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		SETTINGS["Favorites"] = newFavs
 
 
-
 	def getFootageFolder(self):
-		return "D:\_TMP"
+		return SETTINGS["FootageFolder"] % {"NAME": self.parent.selName}
+
 
 	def ctxt_openFootageFolder(self):
 		path = self.getFootageFolder()
+
+		# Get Ueberfolder:
+		path = "/".join(path.split("/")[:-1])
+
 		os.system("explorer /e /select," + path.replace("/", "\\") + "\\")
 		return True
+
 
 	def ctxt_openFootageRV(self):
 		path = self.getFootageFolder()
@@ -390,10 +395,10 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 			ctxt_FravoritesAdd.setIconVisibleInMenu(True)
 			self.connect(ctxt_FravoritesAdd, QtCore.SIGNAL("triggered()"), self.ctxt_FavoritesAdd)
 
-		self.ctxtMenue.addSeparator()
 
+		if SETTINGS["showOpenFootage"] and os.path.isdir(self.getFootageFolder()):
+			self.ctxtMenue.addSeparator()
 
-		if SETTINGS["showOpenFootage"]:
 			# Open Footage Folder
 			ctxt_openFootageFolder = self.ctxtMenue.addAction(folderIcon(), "open Footage Folder")
 			ctxt_openFootageFolder.setIconVisibleInMenu(True)
@@ -405,7 +410,7 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 			self.connect(ctxt_openFootageRV, QtCore.SIGNAL("triggered()"), self.ctxt_openFootageRV)
 
 
-			self.ctxtMenue.exec_(self.mapToGlobal(pos) + QtCore.QPoint(5,5))
+		self.ctxtMenue.exec_(self.mapToGlobal(pos) + QtCore.QPoint(5,5))
 
 
 

@@ -16,10 +16,12 @@ LAST_SYNC = None
 SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
-	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	settings_Folder =  rootDir + "/_ProjectSettings/"
+	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
 	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
-	SETTINGS_PROJECT = "F:/070_SOFTWARE/_Tools/vuSceneSelector_Settings/project_Flut.py"
+	#SETTINGS_PROJECT = "F:/070_SOFTWARE/_Tools/vuSceneSelector_Settings/project_Flut.py"
+
+
 
 from core import Settings
 SETTINGS = Settings.SETTINGS
@@ -32,10 +34,17 @@ SPREADSHEET_KEY = SETTINGS["syncGoogleSpreadSheet"]
 ATTRS_SHOT  = ["Description"] + SETTINGS["headerInfosShots"] + ["startHandle", "endHandle", "Frames", "firstFrame", "lastFrame"]
 ATTRS_ASSET = ["Description"]
 
-SHEETNAMES = {}
-SHEETNAMES["Shots"] = "WSDF_Shots"
-SHEETNAMES["Assets"] = "WSDF_Assets"
+if SETTINGS["projectName"] == "Jagon":
+	ATTRS_SHOT += ["Tags"]
 
+
+SHEETNAMES = {}
+if SETTINGS["projectName"] == "Jagon":
+	SHEETNAMES["Shots"] = "Shots"
+	SHEETNAMES["Assets"] = "Assets"
+else:
+	SHEETNAMES["Shots"] = "WSDF_Shots"
+	SHEETNAMES["Assets"] = "WSDF_Assets"
 
 
 ##########################

@@ -12,6 +12,14 @@ SETTINGS = Settings.SETTINGS
 FOLDER_HEADER_IMAGES = SETTINGS["Graphics_FolderHeaderImages"]
 INFOS = SETTINGS["headerInfosShots"]
 
+WARNING_STYLE = """
+border: 20px solid rgb(255,0,255);
+font-size: 64px;
+color: rgb(0,255,0);
+
+background-color: transparent
+"""
+
 
 class Header(QtGui.QWidget):
 	def __init__(self, window):
@@ -23,8 +31,15 @@ class Header(QtGui.QWidget):
 		self.image.setStyleSheet("border: 1px solid " + style.COLOR_BORDER)
 		self.image.mousePressEvent = self.imageClicked
 
-		self.imageLayout = QtGui.QHBoxLayout()
-		self.imageLayout.addWidget(self.image)
+		self.warning = QtGui.QLabel("Please Restart")
+		self.warning.setStyleSheet(WARNING_STYLE)
+		self.warning.setAlignment(QtCore.Qt.AlignCenter)
+		self.warning.setVisible(False)
+
+		self.imageLayout = QtGui.QGridLayout()
+		self.imageLayout.addWidget(self.image, 0, 0)
+		self.imageLayout.addWidget(self.warning, 0, 0)
+
 
 
 		self.grpInfo = QtGui.QGroupBox("")

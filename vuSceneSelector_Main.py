@@ -16,9 +16,9 @@ SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
 	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
-	SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
 
 
 
@@ -35,14 +35,11 @@ from sync import syncTasks
 from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, Help, ChangeLog
 from adminUtils import adminMainUI
 
-if SETTINGS["projectName"] == "Jagon":
-	from ui import Header_Jagon as Header
-elif SETTINGS["projectName"] == "Kroetenlied":
+if SETTINGS["projectName"] == "Kroetenlied":
 	from ui import Header_Kroetenlied as Header
-elif SETTINGS["projectName"] == "WirSindDieFlut":
-	from ui import Header_Flut as Header
 else:
-	from ui import Header_Jagon as Header
+	from ui import Header
+
 
 
 ##############################################################################################
@@ -88,14 +85,23 @@ class UpdateThread(QtCore.QThread):
 		self.parent = parent
 		self.running = True
 		self.lastCheck = None
+		self.startUpTime = os.stat(__file__).st_mtime
 
 	def run(self):
 		while self.running:
+			# Index changed
 			if os.stat(Index.DB_FILENAME).st_mtime != self.lastCheck:
 				time.sleep(0.1)
 				reload(Index)
 				self.lastCheck = os.stat(Index.DB_FILENAME).st_mtime
 				self.emit(QtCore.SIGNAL("thread_update()"))
+
+
+			# Main Changed
+			if self.startUpTime != os.stat(__file__).st_mtime:
+				self.parent.header.warning.setText("Please Restart !!!")
+				self.parent.header.warning.setVisible(True)
+
 			time.sleep(SETTINGS["REFRESH_INTERVALL"])
 
 

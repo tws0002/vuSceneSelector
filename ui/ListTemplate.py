@@ -144,7 +144,7 @@ class HeaderItemSort(QtGui.QLabel):
 	def update(self):
 		text = self.text
 		if self.state != None:
-			text += " " + [u"\u25BC", u"\u25B2"][self.state]
+			text += " " + [u"\u25B2", u"\u25BC"][self.state]
 		self.setText(text)
 
 	def toogle(self, state):

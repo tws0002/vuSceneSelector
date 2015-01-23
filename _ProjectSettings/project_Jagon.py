@@ -60,6 +60,8 @@ Shots_GroupLabel = 'Sequence'
 Shots_FolderTemplate = projectRoot + '/050_Shots/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_WORK'
 Shots_FolderOUT = projectRoot + '/050_Shots/%(TASK_NUM)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s/%(NAME)s_%(TASK_NAME)s_OUT'
 
+FootageFolder = projectRoot + '/040_Footage/010_Shots/%(NAME)s/%(NAME)s_Source_EXR'
+showOpenFootage = True
 
 # Tasks
 COLOR_ICON_INACTIVE = '#3c3c3c'
@@ -91,9 +93,13 @@ TASKS_WITHOUT_ICON = ['SLAPCOMP', 'COOKIE', 'BS', 'BND']
 # SyncMode
 syncMode = 'Google'
 syncFolder = _folderPipeline + '/vuPipelineOverview_Settings/syncTasks'
+syncGoogleSpreadSheet = "1Jyigwenkykobsq29sh-CSTxZKkpbEmlkUm6s7S9uZZI"
+
+headerInfosShots = ["Lens", "FPS"]
 
 # Time to wait between 2 TimeStamp-Checks
 REFRESH_INTERVALL = 0.01
+
 
 
 
