@@ -8,7 +8,7 @@ from sync import syncTasks
 SETTINGS = Settings.SETTINGS
 
 FOLDER_ICONS = os.path.dirname(__file__).replace(os.sep, "/") + "/graphics/icons"
-
+RV_EXE = "C:\\Program Files\\Tweak\\RV\\bin\\rv.exe"
 
 
 
@@ -33,6 +33,11 @@ def favIcon_ctxtFull():
 def folderIcon():
 	color = QtGui.QColor(155, 155, 155)
 	tex = iconFromFile(FOLDER_ICONS + "/icon_folder.png", 12, color)
+	return QtGui.QIcon(tex)
+
+def iconRV():
+	color = QtGui.QColor(155, 155, 155)
+	tex = iconFromFile(FOLDER_ICONS + "/icon_rvPlayer.png", 12, color)
 	return QtGui.QIcon(tex)
 
 
@@ -146,6 +151,7 @@ class TableAssetsIcon(QtGui.QLabel):
 		ctxt_headline = self.ctxtMenue.addAction(self.shot + "_" + self.task)
 		ctxt_headline.setEnabled(False)
 		ctxt_headline.hover = None
+		self.ctxtMenue.addSeparator()
 
 		for status in SETTINGS["STATI"]:
 
@@ -353,14 +359,19 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		SETTINGS["Favorites"] = newFavs
 
 
-	def ctxt_openFolder(self):
-		path = self.parent.sceneFolder
-		if not os.path.exists(path):
-			print "Path gibts nicht"
-			return False
-		else:
-			os.system("explorer /e /select," + path.replace("/", "\\") + "\\")
-			return True
+
+	def getFootageFolder(self):
+		return "D:\_TMP"
+
+	def ctxt_openFootageFolder(self):
+		path = self.getFootageFolder()
+		os.system("explorer /e /select," + path.replace("/", "\\") + "\\")
+		return True
+
+	def ctxt_openFootageRV(self):
+		path = self.getFootageFolder()
+		os.system('start "" "' + RV_EXE + '" ' + path)
+		return True
 
 
 	def mouseClickRight(self, pos):
@@ -369,9 +380,6 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		self.ctxtMenue = QtGui.QMenu()
 		self.ctxtMenue.setStyleSheet(style.STYLE)
 
-		ctxt_openFolder = self.ctxtMenue.addAction(folderIcon(), "Open Folder")
-		ctxt_openFolder.setIconVisibleInMenu(True)
-		self.connect(ctxt_openFolder, QtCore.SIGNAL("triggered()"), self.ctxt_openFolder)
 
 		if self.parent.selName in SETTINGS["Favorites"]:
 			ctxt_FravoritesRem = self.ctxtMenue.addAction(favIcon_ctxtFull(), "Remove from Favorites")
@@ -382,10 +390,22 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 			ctxt_FravoritesAdd.setIconVisibleInMenu(True)
 			self.connect(ctxt_FravoritesAdd, QtCore.SIGNAL("triggered()"), self.ctxt_FavoritesAdd)
 
+		self.ctxtMenue.addSeparator()
 
 
+		if SETTINGS["showOpenFootage"]:
+			# Open Footage Folder
+			ctxt_openFootageFolder = self.ctxtMenue.addAction(folderIcon(), "open Footage Folder")
+			ctxt_openFootageFolder.setIconVisibleInMenu(True)
+			self.connect(ctxt_openFootageFolder, QtCore.SIGNAL("triggered()"), self.ctxt_openFootageFolder)
 
-		self.ctxtMenue.exec_(self.mapToGlobal(pos) + QtCore.QPoint(5,5))
+			# Open Footage RV
+			ctxt_openFootageRV = self.ctxtMenue.addAction(iconRV(), "open Footage RV")
+			ctxt_openFootageRV.setIconVisibleInMenu(True)
+			self.connect(ctxt_openFootageRV, QtCore.SIGNAL("triggered()"), self.ctxt_openFootageRV)
+
+
+			self.ctxtMenue.exec_(self.mapToGlobal(pos) + QtCore.QPoint(5,5))
 
 
 

@@ -64,6 +64,25 @@ def reWriteOverviewJagon():
 	#save(data)
 
 
+def reWriteOverviewFlut():
+	if not data: load()
+
+	data["Overview"] = {}
+	data["Overview"]["lastSync"] = ""
+	data["Overview"]["Types"] = []
+
+	# Get Tasks and add them
+	data["Overview"]["Types"] += ["Assets", "Shots"]
+	data["Overview"]["Assets"] = {}
+	data["Overview"]["Assets"]["Tasks"] = []
+	data["Overview"]["Assets"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('035', 'ANIM'), ('040', 'SHD')]
+	data["Overview"]["Shots"] = {}
+	data["Overview"]["Shots"]["Tasks"] = []
+	data["Overview"]["Shots"]["Tasks"] = [('030', 'TRACK'), ('040', 'DMP'), ("050", "3D"), ('060', 'COMP')]
+	#save(data)
+
+
+
 def getFilter(parts):
 	attr	= parts[2]
 	op		= parts[1]

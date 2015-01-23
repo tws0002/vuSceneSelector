@@ -43,10 +43,6 @@ FIELDS_SHOTS = ["code", "description"]
 
 
 
-
-
-
-
 # Mapping: LocalName -> Shotgun
 mappingsLocal2ShotGun = {}
 
@@ -218,6 +214,12 @@ def loadTasks():
 
 
 
+def save():
+	print "[SYNC-SHOTGUN]", "SaveData!"
+	Index.save(Index.data)
+
+
+
 def load(force=True):
 	oldData = Index.load()
 
@@ -229,10 +231,14 @@ def load(force=True):
 	loadTasks()
 
 	# Save
-	hasChanged = oldData["items"] != Index.data["items"]
-	if force or hasChanged:
-		print "[SYNC-SHOTGUN]", "SaveData!"
-		Index.save(Index.data)
+	if force:
+		save()
+		return True
+
+	if oldData["items"] != Index.data["items"]:
+		return Index.data
+
+	return False
 
 
 

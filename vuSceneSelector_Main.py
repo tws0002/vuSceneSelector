@@ -16,8 +16,9 @@ SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
 	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
+	SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
 
 
 
@@ -38,6 +39,8 @@ if SETTINGS["projectName"] == "Jagon":
 	from ui import Header_Jagon as Header
 elif SETTINGS["projectName"] == "Kroetenlied":
 	from ui import Header_Kroetenlied as Header
+elif SETTINGS["projectName"] == "WirSindDieFlut":
+	from ui import Header_Flut as Header
 else:
 	from ui import Header_Jagon as Header
 
@@ -49,7 +52,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "5"
+VERSION_MINOR = "5.1"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
 

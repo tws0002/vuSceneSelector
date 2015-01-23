@@ -9,8 +9,32 @@ sys.path.append(rootDir + "/sync/libs")
 import gdata.spreadsheet.service
 
 from core import Index
+LAST_SYNC = None
 
-SPREADSHEET_KEY = "1Jyigwenkykobsq29sh-CSTxZKkpbEmlkUm6s7S9uZZI"
+
+# Settings
+SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
+if not SETTINGS_PROJECT:
+	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
+	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
+	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
+	SETTINGS_PROJECT = "F:/070_SOFTWARE/_Tools/vuSceneSelector_Settings/project_Flut.py"
+
+from core import Settings
+SETTINGS = Settings.SETTINGS
+SETTINGS.load(SETTINGS_PROJECT, "r")
+SETTINGS.load(SETTINGS["Settings_User"])
+
+
+SPREADSHEET_KEY = SETTINGS["syncGoogleSpreadSheet"]
+
+ATTRS_SHOT  = ["Description"] + SETTINGS["headerInfosShots"] + ["startHandle", "endHandle", "Frames", "firstFrame", "lastFrame"]
+ATTRS_ASSET = ["Description"]
+
+SHEETNAMES = {}
+SHEETNAMES["Shots"] = "WSDF_Shots"
+SHEETNAMES["Assets"] = "WSDF_Assets"
 
 
 
@@ -36,9 +60,10 @@ def createService():
 
 
 def findSheet(spr_client, Type):
+	sheetName = SHEETNAMES[Type]
 	sheets = spr_client.GetWorksheetsFeed(SPREADSHEET_KEY)
 	for sheet in sheets.entry:
-		if sheet.title.text == Type:
+		if sheet.title.text == sheetName:
 			return sheet.id.text.split("/")[-1]
 	return None
 
@@ -134,29 +159,35 @@ def row2tasks(name, row):
 	return True
 
 
-ATTRS_SHOT = ["Tags", "firstFrame", "lastFrame", "startHandle", "endHandle", "Lens", "Frames", "FPS", "Description"]
+
 def row2shot(row):
 	name = row["shotnamevfx"].text
+
 	if not name:
 		return False
+
+	# Exeption for Shots != Jagon
 	print "[SYNC-GOOGLE] Load Shots", name
 
 	Index.setValue(name, "Type", "Shots", saveData=False)
-	Index.setValue(name, "Group", name.split("_")[0], saveData=False)
-	Index.setValue(name, "Num", name.split("_")[1], saveData=False)
+	Index.setValue(name, "Group", re.findall("[A-Za-z]+", name)[0], saveData=False)
+	Index.setValue(name, "Num", re.findall("\d+", name)[0],         saveData=False)
 	Index.setValue(name, "Code", name, saveData=False)
+
 
 	for attr in ATTRS_SHOT:
 		value = row[attr.lower()].text
 		Index.setValue(name, attr, value if value else "", saveData=False)
 
-	row2tasks(name, row)
+	# WSDF
+	if SETTINGS["projectName"] == "WirSindDieFlut":
+		Index.setValue(name, "Tags", "VFX", saveData=False)
 
-	# Save
-	#Index.save(Index.data)
+	row2tasks(name, row)
 	return True
 
-ATTRS_ASSET = ["Description"]
+
+
 def row2asset(row):
 	name = row["assetname"].text
 	if not name:
@@ -206,15 +237,34 @@ def loadAssets():
 
 
 
-def load():
+def save():
+	print "[SYNC-GOOGLE]", "SaveData!"
+	Index.save(Index.data)
 
+
+def load(force=True):
+	oldData = Index.load()
+
+	# Write Data
 	Index.clear()
-	Index.reWriteOverviewJagon()
-
-
+	if SETTINGS["projectName"] == "Jagon":
+		Index.reWriteOverviewJagon()
+	else:
+		Index.reWriteOverviewFlut()
 	loadAssets()
 	loadShots()
-	Index.save(Index.data)
+
+	# Save
+	if force:
+		save()
+		return True
+
+	if oldData["items"] != Index.data["items"]:
+		return Index.data
+
+	return False
+
+
 
 
 if __name__ == '__main__':
