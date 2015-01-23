@@ -45,7 +45,8 @@ elif syncMode == "Shotgun":
 LAST_SYNC = datetime.datetime(year=1, month=1, day=1)
 
 def getTaskFiles():
-	return [f for f in os.listdir(TASK_FOLDER) if os.path.isfile(TASK_FOLDER + "/" + f)]	# Get only Files
+	files = [f for f in os.listdir(TASK_FOLDER) if os.path.isfile(TASK_FOLDER + "/" + f)]	# Get only Files
+	return sorted(files)
 
 def processUploads():
 	files = getTaskFiles()
@@ -72,7 +73,7 @@ def processUploads():
 		return True
 
 
-DOWNLOAD_INTERVALL = datetime.timedelta(minutes=2)
+DOWNLOAD_INTERVALL = datetime.timedelta(minutes=5)
 
 def watch():
 	processUploads()
