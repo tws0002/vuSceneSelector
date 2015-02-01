@@ -81,6 +81,11 @@ TASKS_WITHOUT_ICON = ['SLAPCOMP', 'COOKIE', 'BS', 'BND']
 TASKS_WITHOUT_PATH = ['BLOCK']
 
 
+# Header
+Graphics_FolderHeaderImages = _folderPipeline + "/graphics/ShotThumbs/"
+headerInfosShots = ["Kamera"]
+headerThumbAspect = 16.0/9.0
+
 
 ###########################
 #
@@ -103,8 +108,6 @@ REFRESH_INTERVALL = 0.01
 #
 #
 
-# HEADER_IMG_SHOTS
-Graphics_FolderHeaderImages = _folderSoftware + '/Assets/Images/ShotThumbs/'
 # ICON
 Application_Icon = 'N:/060_Software/Kroetenlied_Pipeline/graphics/Icons/Kroetenlied_Icon.ico'
 

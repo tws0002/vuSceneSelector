@@ -65,6 +65,10 @@ REFRESH_INTERVALL = 0.01
 
 # HEADER_IMG_SHOTS
 Graphics_FolderHeaderImages = projectRoot + "/090_Software/Assets/Images/ShotThumbs/"
+
+headerThumbAspect = 512.0/215.0
+
+
 # ICON
 Application_Icon = projectRoot + '/Icon_Jagon.png'
 Application_Icon = 'V:/090_Software/Assets/Icons/Icon_Jagon.png'

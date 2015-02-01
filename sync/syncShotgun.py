@@ -37,7 +37,7 @@ SCRIPT_KEY = '1c87c13470d87c51c1a3275ddde9bfb9e9428bc345ed16772451b8df5c972deb'
 PROJECT_FILTER = ["project","is",{'type':'Project','id':112, 'name': 'Kroetenlied'}]
 
 FIELDS_ASSET = ["code", "description", "sg_asset_group_1", "sg_asset_type"]
-FIELDS_SHOTS = ["code", "description"]
+FIELDS_SHOTS = ["code", "description", "sg_cut_duration", "sg_effects"]
 
 
 
@@ -96,7 +96,7 @@ for localName in mappingsLocal2ShotGun:
 #
 
 def sg_connect():
-	return shotgun.Shotgun(SERVER_PATH, SCRIPT_NAME, SCRIPT_KEY, http_proxy="quake:3128" if IS_AKA else "")
+	return shotgun.Shotgun(SERVER_PATH, SCRIPT_NAME, SCRIPT_KEY, http_proxy="quake:3128" if IS_AKA else "", ensure_ascii=False)
 
 
 
@@ -175,6 +175,14 @@ def createShot(shot):
 
 	Index.setValue(name, "Num",			shot["code"][1:], saveData=False)
 	Index.setValue(name, "Description",	shot["description"], saveData=False)
+	Index.setValue(name, "Kamera",		shot["sg_effects"], saveData=False)
+
+	# FrameRange
+	Index.setValue(name, "startHandle",	"0", saveData=False)
+	Index.setValue(name, "endHandle",	"0", saveData=False)
+	Index.setValue(name, "firstFrame",	"1001", saveData=False)
+	Index.setValue(name, "lastFrame",	str(1001 + shot["sg_cut_duration"]), saveData=False)
+
 	return True
 
 
@@ -244,8 +252,8 @@ def load(force=True):
 
 
 if __name__ == '__main__':
-	pass
-	#load(False)
+	#pass
+	load(True)
 	#setStatus("Z910", "ANIM", "fin")
 	#setStatus("TestCharacter", "SHD", "ip")
 	#setTodo("Z910", "ANIM", "Test123")

@@ -38,10 +38,27 @@ def createIcon(path):
 	return QtGui.QIcon(tex)
 
 
-def addAction_OpenRV(menu, name, path):
+def addAction_OpenRV(menu, name, path, folder=False):
+
+	if folder:
+		fullPath = path
+	else:
+		# Get First ImageFile in Folder
+		fullPath = None
+		for fileItem in scandir.scandir(path):
+			if fileItem.is_file():
+				base, ext = os.path.splitext(fileItem.name)
+				if ext in FILTER_EXTENSIONS:
+					fullPath = path + "/" + fileItem.name
+					break;
+		# Exit if there was no Image
+		if not fullPath:
+			return
+
+
 	def clicked():
-		#print "Open RV" + path
-		os.system('start "" "' + RV_EXE + '" ' + path)
+		print "Open RV: ", fullPath
+		os.system('start "" "' + RV_EXE + '" ' + fullPath)
 
 	icon = createIcon(FOLDER_ICONS + "/icon_rvPlayer.png")
 
@@ -83,7 +100,7 @@ def getFolder_OUT(Type, name, task):
 	return path
 
 
-def getSequences(path, menu, asSubMenu=True):
+def getSequences(path, menu, task="", asSubMenu=True):
 	foundSomething = False
 	items = []
 	if os.path.isdir(path):
@@ -96,24 +113,30 @@ def getSequences(path, menu, asSubMenu=True):
 
 
 		for fileItem in items:
-
 			# Get Vars
 			fileName = fileItem.name
 			filePath  = path + "/" + fileName
+			subFolders = []
 
-			if asSubMenu:
+			# Search for SubFolders:
+			for subFileItem in scandir.scandir(filePath):
+				if subFileItem.is_dir():
+					subFolders.append(subFileItem)
+
+
+			if len(subFolders):
+				submenu = menu.addMenu(fileName)
+				for subFileItem in sorted(subFolders, key=lambda x: x.name , reverse=True):
+					subFileName = subFileItem.name
+					addAction_OpenRV(submenu, subFileName, filePath + "/" + subFileName, folder=True)
+
+			elif QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
 				submenu = menu.addMenu(fileName)
 				addAction_OpenRV(submenu, fileName, filePath)
 				addAction_OpenFolder(submenu, fileName, filePath)
 			else:
 				addAction_OpenRV(menu, fileName, filePath)
 
-
-			if any([task in path for task in TASKS_WITH_SUBFOLDERS]):
-				for subFileItem in scandir.scandir(filePath):
-					if subFileItem.is_dir() and subFileItem.name.lower() not in FILTER_FOLDER:
-						subFileName = subFileItem.name
-						addAction_OpenRV(submenu, subFileName, filePath + "/" + subFileName)
 
 	else:
 		print "Fould not found", path
@@ -191,19 +214,19 @@ class ListTasks(ListTemplate.ListTemplate):
 
 
 		path = getFolder_OUT(Type, shot, task)
-		sequences = getSequences(path, menu, SETTINGS["taskList_showOpenFolder"])
+		sequences = getSequences(path, menu, task=task, asSubMenu=False) #SETTINGS["taskList_showOpenFolder"])
 		if not sequences:
 			menu.addAction("no Versions found")
 
-		# Open Work
 		menu.addSeparator()
 		if task == "COMP":
 			path = self.parent.sceneFolder + "/prerender"
-
 			submenue_preRender = menu.addMenu("preRenders")
 			getSequences(path, submenue_preRender, False)
 
+		# Open Work
 		addAction_OpenFolder(menu, "Open: " + task + "_WORK", self.parent.sceneFolder)
+		addAction_OpenFolder(menu, "Open: " + task + "_OUT", getFolder_OUT(Type, shot, task))
 
 		menu.exec_(event.globalPos())
 

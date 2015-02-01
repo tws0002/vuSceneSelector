@@ -339,3 +339,9 @@ class TableScenes(ListTemplate.TableTemplate):
 		drag = QtGui.QDrag(self)
 		drag.setMimeData(data)
 		drag.exec_(QtCore.Qt.MoveAction)
+
+
+
+	def keyPressEvent(self, event):
+		if event.key() == QtCore.Qt.Key_F5:
+			self.refreshList(self.window.sceneFolder)

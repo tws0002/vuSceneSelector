@@ -35,10 +35,10 @@ from sync import syncTasks
 from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, Help, ChangeLog
 from adminUtils import adminMainUI
 
-if SETTINGS["projectName"] == "Kroetenlied":
-	from ui import Header_Kroetenlied as Header
-else:
-	from ui import Header
+#if SETTINGS["projectName"] == "Kroetenlied":
+#	from ui import Header_Kroetenlied as Header
+#else:
+from ui import Header
 
 
 
@@ -49,7 +49,7 @@ else:
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "5.3"
+VERSION_MINOR = "5.4"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
 

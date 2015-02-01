@@ -132,7 +132,8 @@ class Header(QtGui.QWidget):
 			path = FOLDER_HEADER_IMAGES + "/__default.png"
 
 		img = QtGui.QPixmap(path)
-		img = img.scaled(512, 215, QtCore.Qt.IgnoreAspectRatio, QtCore.Qt.FastTransformation)
+		width = 215 * SETTINGS["headerThumbAspect"]
+		img = img.scaled(width, 215, QtCore.Qt.IgnoreAspectRatio, QtCore.Qt.FastTransformation)
 		self.image.setPixmap(img)
 
 
