@@ -28,19 +28,30 @@ except Exception, e:
 ROOT_ASSETS = "V:/045_Assets"
 ROOT_SHOTS = "V:/050_Shots"
 
-templateShots = """
-%(ROOT_SHOTS)s/%(TaskNum)s_%(TaskName)s
-%(ROOT_SHOTS)s/%(TaskNum)s_%(TaskName)s/%(Name)s_%(TaskName)s
-%(ROOT_SHOTS)s/%(TaskNum)s_%(TaskName)s/%(Name)s_%(TaskName)s/%(Name)s_%(TaskName)s_OUT
-%(ROOT_SHOTS)s/%(TaskNum)s_%(TaskName)s/%(Name)s_%(TaskName)s/%(Name)s_%(TaskName)s_WORK
-"""
+TASKS_SHOTS = []
+TASKS_SHOTS += [("010", "TRACK")]
+TASKS_SHOTS += [("020", "MATTEPAINT")]
+TASKS_SHOTS += [("025", "3D")]
+TASKS_SHOTS += [("030", "ANIM")]
+TASKS_SHOTS += [("040", "SIM")]
+#TASKS_SHOTS += [("045", "SFS")]
+TASKS_SHOTS += [("050", "LIGHT")]
+TASKS_SHOTS += [("055", "SLAPCOMP")]
+TASKS_SHOTS += [("060", "COMP")]
 
+
+templateShots = "%(ROOT_SHOTS)s/%(taskNum)s_%(taskName)s/%(shotName)s_%(taskName)s/%(shotName)s_%(taskName)s"
+
+
+
+'''
 templateAsset = """
-%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(TaskNum)s_%(Name)s_%(TaskName)s
-%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(TaskNum)s_%(Name)s_%(TaskName)s/%(Name)s_%(TaskName)s_MASTER
-%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(TaskNum)s_%(Name)s_%(TaskName)s/%(Name)s_%(TaskName)s_VERSIONS
-%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(TaskNum)s_%(Name)s_%(TaskName)s/%(Name)s_%(TaskName)s_WORK
+%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(taskNum)s_%(Name)s_%(taskName)s
+%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(taskNum)s_%(Name)s_%(taskName)s/%(Name)s_%(taskName)s_MASTER
+%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(taskNum)s_%(Name)s_%(taskName)s/%(Name)s_%(taskName)s_VERSIONS
+%(ROOT_ASSETS)s/%(Num)s_%(Name)s/%(taskNum)s_%(Name)s_%(taskName)s/%(Name)s_%(taskName)s_WORK
 """
+'''
 
 
 ##############################################################################################
@@ -56,24 +67,27 @@ def createFolder(path):
 		os.makedirs(path)
 
 
-def solveTemple(template):
-	for line in template.split("\n")[1:-1]:
-		createFolder(line)
+
+def createShot(shotName, tasks):
+
+	values = {}
+	values["ROOT_SHOTS"] = ROOT_SHOTS
+	values["shotName"]   = shotName
+
+	for taskNum, taskName in tasks:
+		values["taskNum"] = taskNum
+		values["taskName"] = taskName
+
+		template = templateShots % values
+		createFolder(template + "_OUT")
+		createFolder(template + "_WORK")
+
+		if taskName == "COMP":
+			createFolder(template + "_WORK/prerender")
+		if taskName in ["SIM", "LIGHT"]:
+			createFolder(template + "_WORK/rendercache")
 
 
-def createAsset(Num, Name):
-	#Num = Num
-	#Name = Name
-
-	for TaskNum, TaskName in Tasks.Asset:
-		template = templateAsset % {
-						"Num"	: Num,
-						"Name"	: Name,
-					"TaskNum"	: TaskNum,
-					"TaskName"	: TaskName,
-				"ROOT_ASSETS"	: ROOT_ASSETS
-									}
-		solveTemple(template)
 
 
 class vuFolderCreator(QtGui.QWidget):
@@ -81,62 +95,83 @@ class vuFolderCreator(QtGui.QWidget):
 		super(vuFolderCreator, self).__init__()
 		self.parent = parent
 
-
-		self.ui_NumLabel = QtGui.QLabel("Num:")
-		self.ui_NameLabel = QtGui.QLabel("Name:")
-
-		self.ui_Num = QtGui.QLineEdit()
-		self.ui_Name = QtGui.QLineEdit()
-
-		self.ui_ButtonCreateAsset = QtGui.QPushButton("create Folders: Asset")
-		self.ui_ButtonCreateAsset.setEnabled(False)
+		self.nameRegEx = QtCore.QRegExp("[a-zA-Z]_[0-9]{5}")
 
 
-		self.ui_ButtonCreateAsset.clicked.connect(self.buttonClicked_CreateAsset)
-		self.ui_Num.textEdited.connect(self.checkValid)
-		self.ui_Name.textEdited.connect(self.checkValid)
+		########################################
+		#
+		#	Widgets
+		#
 
-		validator=QtGui.QRegExpValidator(QtCore.QRegExp("[0-9][0-9][0-9]"), self.ui_Num)
-		self.ui_Num.setValidator(validator)
+		self.uiName = QtGui.QLineEdit()
+		self.uiName.textEdited.connect(self.checkValid)
+		validator = QtGui.QRegExpValidator(self.nameRegEx, self.uiName)
+		self.uiName.setValidator(validator)
 
-		validator=QtGui.QRegExpValidator(QtCore.QRegExp("^[a-zA-Z0-9]+$"), self.ui_Name)
-		self.ui_Name.setValidator(validator)
+		self.ui_ButtonCreateShot = QtGui.QPushButton("Create")
+		self.ui_ButtonCreateShot.setEnabled(False)
+		self.ui_ButtonCreateShot.clicked.connect(self.buttonClicked_CreateFolders)
+
+
+		# Tasks
+		n = 0
+		numTasks = len(TASKS_SHOTS)
+		layoutTasks = QtGui.QGridLayout()
+		self.taskCheckboxes = []
+		for taskNum, taskName in TASKS_SHOTS:
+			chkbx = QtGui.QCheckBox(taskName)
+			self.taskCheckboxes += [((taskNum, taskName), chkbx)]
+
+			layoutTasks.addWidget(chkbx, n%4, (n - n%4) / 4)
+			n += 1
+
+
+
+
+
+
+		########################################
+		#
+		#	Layout
+		#
+
 
 		mainGrid = QtGui.QGridLayout()
-		self.setLayout(mainGrid)
 
-		mainGrid.addWidget(self.ui_NumLabel, 0, 0)
-		mainGrid.addWidget(self.ui_NameLabel, 0, 1)
-		mainGrid.addWidget(self.ui_Num, 1, 0)
-		mainGrid.addWidget(self.ui_Name, 1, 1)
-		mainGrid.addWidget(self.ui_ButtonCreateAsset, 1, 3)
+		mainGrid.addWidget(QtGui.QLabel("Name:"), 0, 0)
+		mainGrid.addWidget(self.uiName, 0, 1)
+		mainGrid.addWidget(QtGui.QLabel("Tasks:"), 1, 0)
+		mainGrid.addLayout(layoutTasks, 2, 0, 1, 2)
+		mainGrid.addWidget(self.ui_ButtonCreateShot, 3, 3)
+
+		mainGrp = QtGui.QGroupBox("Folder Creator:")
+		mainGrp.setLayout(mainGrid)
+
+		mainlayout = QtGui.QHBoxLayout()
+		mainlayout.addWidget(mainGrp)
+		mainlayout.setMargin(0)
+		self.setLayout(mainlayout)
+
 
 
 
 	def checkValid(self):
-		Num = str(self.ui_Num.text())
-		Name = str(self.ui_Name.text())
+		nameValue = str(self.uiName.text())
 
-
-		if len(Num) == 3 and Name:
-			self.ui_ButtonCreateAsset.setEnabled(True)
+		if self.nameRegEx.exactMatch(nameValue):
+			self.ui_ButtonCreateShot.setEnabled(True)
 		else:
-			self.ui_ButtonCreateAsset.setEnabled(False)
+			self.ui_ButtonCreateShot.setEnabled(False)
 
 
-	def buttonClicked_CreateAsset(self):
-		Num = str(self.ui_Num.text())
-		Name = str(self.ui_Name.text())
 
-		if not Name:
-			print "Enter a Name"
-			return False
+	def buttonClicked_CreateFolders(self):
+		nameValue = str(self.uiName.text())
 
-		if "_" in Name:
-			print "Plaease check your Name!"
+		tasks = [taskName for taskName, chkbx in self.taskCheckboxes if chkbx.isChecked()]
+		createShot(nameValue, tasks)
 
 
-		createAsset(Num, Name)
 
 
 if __name__ == "__main__":
@@ -145,3 +180,5 @@ if __name__ == "__main__":
 	window = vuFolderCreator()
 	window.show()
 	app.exec_()
+
+	#createShot("Z_90200", [("010", "SIM"), ("020", "LIGHT"), ("030", "COMP")])

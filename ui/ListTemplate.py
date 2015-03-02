@@ -80,9 +80,10 @@ class TableTemplate(QtGui.QTableWidget):
 
 
 
-	def resizeRows(self):
+	def resizeRows(self, header=True):
 		"Rezise Rows after adding some Content"
-		self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
+		if header:
+			self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 		for r in range(self.rowCount()):
 			self.setRowHeight(r, 17)
 

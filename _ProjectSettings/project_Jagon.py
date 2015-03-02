@@ -165,4 +165,5 @@ showShotTaskStatusIcons = True
 # ADMINS
 ADMINS = ['vullmann', 'ffricke', 'jweiss']
 
-isAdmin = False#getpass.getuser() in ADMINS
+isAdmin = False
+isAdmin = getpass.getuser() in ADMINS

@@ -38,6 +38,7 @@ class debugPage(QtGui.QWidget):
 		googleWidget = self.createInterface_SyncGoogle()
 		main_grid.addWidget(googleWidget, 1, 0)
 
+
 		folderCreator = vuFolderCreator.vuFolderCreator()
 		main_grid.addWidget(folderCreator, 2, 0)
 

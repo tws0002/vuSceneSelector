@@ -2,7 +2,8 @@ from PyQt4 import QtCore, QtGui
 import os, sys
 
 # Import Modules
-from core import Settings, Index
+from core import Settings, Index, History
+from libs import pyttsx
 from ui import style, ListTemplate
 from sync import syncTasks
 SETTINGS = Settings.SETTINGS
@@ -108,6 +109,7 @@ class TableAssetsIcon(QtGui.QLabel):
 		self.setText(self.status)
 		Index.setValue(self.shot, self.task + "_Status", self.status)
 		syncTasks.addTask(self.shot, self.task + "_Status", self.status)
+		History.HISTORY.addEventStatus(self.shot, self.task, self.status)
 
 
 	def getIcon(self, status=None):
@@ -127,6 +129,19 @@ class TableAssetsIcon(QtGui.QLabel):
 	def toogle(self):
 		self.applyText()
 		self.addIcon()
+
+
+		for status in SETTINGS["STATI"]:
+			if status["value"] == self.status:
+
+				#msg = self.shot + " " + self.task  + " is " + status["label"]
+				msg = status["label"]
+
+				engine = pyttsx.init()
+				engine.setProperty('rate', 120)
+				engine.say(msg)
+				engine.runAndWait()
+				return
 
 
 	def getToogleFunction(self, value):
@@ -212,14 +227,6 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		super(TableAssets, self).resizeEvent(event)
 		self.emit(QtCore.SIGNAL("resizeSignal()"))
 
-	"""
-		if self.scrollIndicator:
-			self.scrollIndicator.setVisible(self.verticalScrollBarVisible)
-		if self.verticalScrollBarVisible:
-			self.setStyleSheet("background-color: red")
-		else:
-			self.setStyleSheet("background-color: green")
-	"""
 
 	def FavoriteSet(self, item, value):
 		if value:
@@ -305,6 +312,8 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		elif self.filterType == "artist":
 			names = [name for name in names if self.selGroup in Index.getArtists(filterShot=name)]
 
+		elif self.filterType == "search":
+			names = [name for name in names if self.selGroup in name]
 
 		for taskName, value in self.FilterTasks.iteritems():
 			if value:

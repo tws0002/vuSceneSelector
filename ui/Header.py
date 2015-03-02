@@ -128,7 +128,7 @@ class Header(QtGui.QWidget):
 	def setImage(self, selName):
 		path = FOLDER_HEADER_IMAGES + selName + ".png"
 		if not os.path.exists(path):
-			print "updateHeader: ShotThumb not found. " + str(path)
+			#print "updateHeader: ShotThumb not found. " + str(path)
 			path = FOLDER_HEADER_IMAGES + "/__default.png"
 
 		img = QtGui.QPixmap(path)

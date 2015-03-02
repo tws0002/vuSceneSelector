@@ -113,7 +113,6 @@ class TableScenesHeader(ListTemplate.TableTemplate):
 
 
 	def sortItems(self):
-		print "SORT ITEMS"
 		self.table.sortItems(self.table.sortColumn, self.table.sortOrder)
 
 		for c in xrange(self.table.columnCount()):
@@ -256,6 +255,7 @@ class TableScenes(ListTemplate.TableTemplate):
 		# Refresh
 		ctxt_refreshList = self.ctxtMenue.addAction(iconRefresh(), "Refresh List")
 		ctxt_refreshList.setIconVisibleInMenu(True)
+		ctxt_refreshList.setShortcut('F5')
 		self.connect(ctxt_refreshList, QtCore.SIGNAL("triggered()"), self.listCtxt_Refresh)
 
 		# Show in Folder
@@ -339,9 +339,3 @@ class TableScenes(ListTemplate.TableTemplate):
 		drag = QtGui.QDrag(self)
 		drag.setMimeData(data)
 		drag.exec_(QtCore.Qt.MoveAction)
-
-
-
-	def keyPressEvent(self, event):
-		if event.key() == QtCore.Qt.Key_F5:
-			self.refreshList(self.window.sceneFolder)

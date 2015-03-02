@@ -117,6 +117,14 @@ QTextEdit
 	border-color: %(COLOR_BORDER)s;
 	border-style: solid;
 }
+
+QLineEdit
+{
+	background: %(COLOR_LIST)s;
+	border-width: 1px;
+	border-color: %(COLOR_BORDER)s;
+	border-style: solid;
+}
 """
 
 

@@ -32,7 +32,7 @@ SETTINGS.load(SETTINGS["Settings_User"])
 # Import Modules
 from core import Index
 from sync import syncTasks
-from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, Help, ChangeLog
+from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, ListHistory, SearchBar, Help, ChangeLog
 from adminUtils import adminMainUI
 
 #if SETTINGS["projectName"] == "Kroetenlied":
@@ -49,7 +49,7 @@ from ui import Header
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "5.4"
+VERSION_MINOR = "6"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
 
@@ -166,14 +166,11 @@ class vuSceneSelector(QtGui.QWidget):
 
 		labelFilter = QtGui.QLabel("Group / Artist:")
 		self.listFilter = ListTemplate.ListTemplate()
-		#self.listFilter.addItems(["dummy"])
 		self.listFilter.addItems(["-- All --", "-- Favorites --"])
 
-		#sp = QtGui.QSizePolicy()
 		x = 18
 		self.listFilter.setMaximumHeight(x*2)
 		self.listFilter.setMinimumHeight(x*2)
-		#self.listFilter.setSizePolicy
 
 		gridFilter = QtGui.QGridLayout()
 		gridFilter.setMargin(0)
@@ -195,7 +192,6 @@ class vuSceneSelector(QtGui.QWidget):
 
 		gridSeq = QtGui.QGridLayout()
 		gridSeq.setMargin(0)
-		#gridSeq.addWidget(labelSeq, 0, 0)
 		gridSeq.addWidget(self.listSeq, 1, 0)
 
 		widgetSeq = QtGui.QWidget()
@@ -212,11 +208,20 @@ class vuSceneSelector(QtGui.QWidget):
 
 		gridArtist = QtGui.QGridLayout()
 		gridArtist.setMargin(0)
-		#gridArtist.addWidget(labelArtist, 0, 0)
 		gridArtist.addWidget(self.listArtist, 1, 0)
 
 		widgetArtist = QtGui.QWidget()
 		widgetArtist.setLayout(gridArtist)
+
+
+		#########################
+		#
+		#	ShotSearch
+		#
+
+		self.searchShot = SearchBar.SearchBar(self)
+		self.searchShot.textChanged.connect(self.searchShot_textChanged)
+
 
 
 
@@ -225,7 +230,6 @@ class vuSceneSelector(QtGui.QWidget):
 		#	Assets
 		#
 
-		#self.scrollAssets = ListTemplate.ScrollIndicator()
 		self.tableAssets = ListsAssets.TableAssets(self)
 		self.labelAssets = ListsAssets.TableAssetsHeader(self, self.tableAssets)
 
@@ -234,7 +238,6 @@ class vuSceneSelector(QtGui.QWidget):
 		gridAsset.setRowStretch(1, 1)
 		gridAsset.addWidget(self.labelAssets, 0, 0)
 		gridAsset.addWidget(self.tableAssets, 1, 0, 2, 1)
-		#gridAsset.addWidget(self.scrollAssets, 2, 0)
 
 		widgetAsset = QtGui.QWidget()
 		widgetAsset.setLayout(gridAsset)
@@ -275,29 +278,42 @@ class vuSceneSelector(QtGui.QWidget):
 
 		#########################
 		#						#
-		#        ToDo           #
+		#        Text           #
 		#						#
 		#########################
+
+		# ToDo
 		labelToDo = QtGui.QLabel("ToDo:")
 		self.toDo = QtGui.QTextEdit()
 		self.toDo.setFocusPolicy(QtCore.Qt.FocusPolicy(QtCore.Qt.ClickFocus))
 
+		# History
+		self.history = ListHistory.TableHistory()
+
+		# StatusBar
 		self.statusBar = QtGui.QLabel("Status")
 		self.statusBar.setAlignment(QtCore.Qt.AlignRight)
 		self.statusBar.hide()
 
-		gridToDo = QtGui.QGridLayout()
-		gridToDo.setMargin(0)
-		gridToDo.addWidget(labelToDo, 0 ,0 )
-		gridToDo.addWidget(self.toDo, 1 ,0 )
-		gridToDo.addWidget(self.statusBar, 2, 0)
 
-		widgetToDo = QtGui.QWidget()
-		widgetToDo.setLayout(gridToDo)
+		self.tabText = QtGui.QTabWidget()
+		self.tabText.addTab(self.toDo, "ToDo")
+		self.tabText.addTab(self.history, "History")
 
 
+		gridText = QtGui.QGridLayout()
+		gridText.setMargin(0)
+		gridText.addWidget(self.tabText, 0 ,0 )
+		gridText.addWidget(self.statusBar, 1, 0)
 
-		self.listWidgetsGroups = [self.listFilter, self.listSeq, self.listArtist]
+
+		widgetText = QtGui.QWidget()
+		widgetText.setLayout(gridText)
+
+
+
+
+		self.listWidgetsGroups = [self.listFilter, self.listSeq, self.searchShot, self.listArtist]
 
 
 		#########################
@@ -314,8 +330,9 @@ class vuSceneSelector(QtGui.QWidget):
 		gridGrpArtist = QtGui.QGridLayout()
 		gridGrpArtist.setMargin(0)
 		gridGrpArtist.addWidget(widgetFilter, 0, 0)
-		gridGrpArtist.addWidget(self.splitterGrpArtist, 1, 0)
-		gridGrpArtist.setRowStretch(1,1)
+		gridGrpArtist.addWidget(self.searchShot, 1, 0)
+		gridGrpArtist.addWidget(self.splitterGrpArtist, 2, 0)
+		gridGrpArtist.setRowStretch(2,1)
 
 
 		widgetGrpArtist = QtGui.QWidget()
@@ -331,7 +348,7 @@ class vuSceneSelector(QtGui.QWidget):
 		# Splitter Scene / ToDo
 		self.splitterSceneToDo = vuSplitter(QtCore.Qt.Horizontal)
 		self.splitterSceneToDo.addWidget(widgetScenes)
-		self.splitterSceneToDo.addWidget(widgetToDo)
+		self.splitterSceneToDo.addWidget(widgetText)
 
 		# Splitter Vertical
 		self.splitterVertical = vuSplitter(QtCore.Qt.Vertical)
@@ -634,6 +651,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 		self.interactive = False
 		self.updateAssets()
+		self.history.refreshHistory()
 		self.updateToDo()
 		self.interactive = True
 
@@ -710,6 +728,11 @@ class vuSceneSelector(QtGui.QWidget):
 			self.filterType = "artist"
 			self.changeGroup(self.listArtist)
 
+	def searchShot_textChanged(self, text):
+		if self.interactive:
+			self.filterType = "search"
+			self.changeGroup(self.searchShot)
+
 
 	def changeTask(self):
 		# Set Vars
@@ -753,7 +776,7 @@ class vuSceneSelector(QtGui.QWidget):
 
 
 	def switchFocus(self, orig, direction):
-		filters = [self.listFilter, self.listSeq, self.listArtist]
+		filters = [self.listFilter, self.searchShot, self.listSeq, self.listArtist]
 		for filterList in filters:
 			if len(filterList.selectedItems()):
 				currentFilterList = filterList
@@ -784,7 +807,7 @@ class vuSceneSelector(QtGui.QWidget):
 				targetList.setFocus()
 
 			elif direction == "DOWN":
-				targetList = filters[(n+1)%3]
+				targetList = filters[(n+1)%len(filters)]
 				targetList.setCurrentRow(0)
 				targetList.setFocus()
 
@@ -820,7 +843,6 @@ class vuSceneSelector(QtGui.QWidget):
 
 		# Enter
 		elif event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
-			print "ENTER"
 			self.sceneList.keyPressEnter()
 
 

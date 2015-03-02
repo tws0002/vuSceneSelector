@@ -69,6 +69,7 @@ def openScene(path):
 		os.system(SETTINGS["NUKE_BATCH"] + " " + path)
 		return "Open NukeScene: " + path
 
+
 	if ext == ".mud":
 		os.system(path)
 		return "Open MudboxScene: " + path
