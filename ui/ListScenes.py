@@ -345,8 +345,6 @@ class TableScenes(ListTemplate.TableTemplate):
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_F5:
 			self.refreshList(self.window.sceneFolder)
+			self.setSelection2(self.window.selScene)
 		else:
 			super(TableScenes, self).keyPressEvent(event)
-
-
-

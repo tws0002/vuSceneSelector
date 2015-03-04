@@ -83,9 +83,12 @@ def loadModules():
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "6.1"
+VERSION_MINOR = "6.2"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
+
+global SPLASH_SCREEN
+
 
 class vuSplitterHandle(QtGui.QSplitterHandle):
 	"""QSplitterHandle-Class to handle MouseHover-Effect"""
@@ -457,6 +460,7 @@ class vuSceneSelector(QtGui.QWidget):
 		self.interactive = True
 
 		self.show()
+		SPLASH_SCREEN.close()
 
 		if VERSION != SETTINGS["lastVersion"]:
 			self.showChangeLog()
@@ -906,14 +910,15 @@ class vuSceneSelector(QtGui.QWidget):
 if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
 
-	print "Started"
 	from ui import SplashScreen
-	splashScreen = SplashScreen.SplashScreen()
+	global SPLASH_SCREEN
+	SPLASH_SCREEN = SplashScreen.SplashScreen()
 
 	loadModules()
+
 	window = vuSceneSelector()
 
-	splashScreen.close()
+
 
 	#window.show()
 	app.exec_()
