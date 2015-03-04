@@ -73,7 +73,7 @@ def processUploads():
 		return True
 
 
-DOWNLOAD_INTERVALL = datetime.timedelta(minutes=5)
+DOWNLOAD_INTERVALL = datetime.timedelta(minutes=30)
 
 def watch():
 	processUploads()

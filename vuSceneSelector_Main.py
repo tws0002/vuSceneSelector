@@ -1,5 +1,16 @@
 #!/usr/bin/env python2.7
 
+
+
+
+
+
+# Globals for Modules
+
+
+
+
+
 from PyQt4 import QtCore, QtGui
 import os
 import sys
@@ -7,38 +18,61 @@ import time
 
 
 
-WORKING_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
-sys.path.append(WORKING_DIR)
-
-
-# Settings
-SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
-if not SETTINGS_PROJECT:
-	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
-	settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
-	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
-	#SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
 
 
 
 
-from core import Settings
-SETTINGS = Settings.SETTINGS
-SETTINGS.load(SETTINGS_PROJECT, "r")
-SETTINGS.load(SETTINGS["Settings_User"])
+
+def loadModules():
+	WORKING_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
+	sys.path.append(WORKING_DIR)
+
+	# Settings
+	SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
+	if not SETTINGS_PROJECT:
+		print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
+		settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
+		SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+		#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
+		#SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
 
 
-# Import Modules
-from core import Index
-from sync import syncTasks
-from ui import style, ListTemplate, ListsAssets, ListScenes, ListTasks, ListHistory, SearchBar, Help, ChangeLog
-from adminUtils import adminMainUI
 
-#if SETTINGS["projectName"] == "Kroetenlied":
-#	from ui import Header_Kroetenlied as Header
-#else:
-from ui import Header
+	global SETTINGS
+	from core import Settings
+	SETTINGS = Settings.SETTINGS
+	SETTINGS.load(SETTINGS_PROJECT, "r")
+	SETTINGS.load(SETTINGS["Settings_User"])
+
+
+
+	global ui
+	import ui
+	import ui.Header
+
+	# Import Modules
+	global Index
+	from core import Index
+	global syncTasks
+	from sync import syncTasks
+
+	global style
+	from ui import style
+	import ui.style
+	import ui.ListTemplate
+	import ui.ListsAssets
+	import ui.ListScenes
+	import ui.ListTasks
+	import ui.ListHistory
+	import ui.SearchBar
+	import ui.Help
+	import ui.ChangeLog
+
+	global adminMainUI
+	from adminUtils import adminMainUI
+
+
+
 
 
 
@@ -49,10 +83,9 @@ from ui import Header
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "6"
+VERSION_MINOR = "6.1"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
-
 
 class vuSplitterHandle(QtGui.QSplitterHandle):
 	"""QSplitterHandle-Class to handle MouseHover-Effect"""
@@ -135,7 +168,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#        Header         #
 		#						#
 		#########################
-		self.header = Header.Header(self)
+		self.header = ui.Header.Header(self)
 
 
 		#########################
@@ -165,7 +198,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#
 
 		labelFilter = QtGui.QLabel("Group / Artist:")
-		self.listFilter = ListTemplate.ListTemplate()
+		self.listFilter = ui.ListTemplate.ListTemplate()
 		self.listFilter.addItems(["-- All --", "-- Favorites --"])
 
 		x = 18
@@ -188,7 +221,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#
 
 		labelSeq = QtGui.QLabel("Group:")
-		self.listSeq = ListTemplate.ListTemplate()
+		self.listSeq = ui.ListTemplate.ListTemplate()
 
 		gridSeq = QtGui.QGridLayout()
 		gridSeq.setMargin(0)
@@ -204,7 +237,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#
 
 		labelArtist = QtGui.QLabel("Artist:")
-		self.listArtist = ListTemplate.ListTemplate()
+		self.listArtist = ui.ListTemplate.ListTemplate()
 
 		gridArtist = QtGui.QGridLayout()
 		gridArtist.setMargin(0)
@@ -219,7 +252,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#	ShotSearch
 		#
 
-		self.searchShot = SearchBar.SearchBar(self)
+		self.searchShot = ui.SearchBar.SearchBar(self)
 		self.searchShot.textChanged.connect(self.searchShot_textChanged)
 
 
@@ -230,8 +263,8 @@ class vuSceneSelector(QtGui.QWidget):
 		#	Assets
 		#
 
-		self.tableAssets = ListsAssets.TableAssets(self)
-		self.labelAssets = ListsAssets.TableAssetsHeader(self, self.tableAssets)
+		self.tableAssets = ui.ListsAssets.TableAssets(self)
+		self.labelAssets = ui.ListsAssets.TableAssetsHeader(self, self.tableAssets)
 
 		gridAsset = QtGui.QGridLayout()
 		gridAsset.setMargin(0)
@@ -249,7 +282,7 @@ class vuSceneSelector(QtGui.QWidget):
 		#
 
 		self.labelTask = QtGui.QLabel("Task:")
-		self.listTasks = ListTasks.ListTasks(self)
+		self.listTasks = ui.ListTasks.ListTasks(self)
 
 		gridTask = QtGui.QGridLayout()
 		gridTask.setMargin(0)
@@ -265,8 +298,8 @@ class vuSceneSelector(QtGui.QWidget):
 		#		SceneList		#
 		#						#
 		#########################
-		self.sceneList = ListScenes.TableScenes(self)
-		labelScenes = ListScenes.TableScenesHeader(self, self.sceneList)
+		self.sceneList = ui.ListScenes.TableScenes(self)
+		labelScenes = ui.ListScenes.TableScenesHeader(self, self.sceneList)
 
 		gridScenes = QtGui.QGridLayout()
 		gridScenes.setMargin(0)
@@ -288,7 +321,7 @@ class vuSceneSelector(QtGui.QWidget):
 		self.toDo.setFocusPolicy(QtCore.Qt.FocusPolicy(QtCore.Qt.ClickFocus))
 
 		# History
-		self.history = ListHistory.TableHistory()
+		self.history = ui.ListHistory.TableHistory()
 
 		# StatusBar
 		self.statusBar = QtGui.QLabel("Status")
@@ -582,25 +615,27 @@ class vuSceneSelector(QtGui.QWidget):
 
 	def updateScenes(self):
 		"Update SceneFolder + SceneList"
-		if "" in [self.selType, self.selGroup, self.selTask, self.selName]:
-			return False
+		try:
+			Vars = {}
+			Vars["TASK_NUM"] = Index.getTaskNum(self.selTask)
+			Vars["TASK_NAME"] = self.selTask
+			Vars["NUM"] = Index.getValue(self.selName, "Num")
+			Vars["NAME"] = self.selName
+			Vars["CODE"] = Index.getValue(self.selName, "Code")
+			Vars["GRP"] = self.selGroup
 
-		Vars = {}
-		Vars["TASK_NUM"] = Index.getTaskNum(self.selTask)
-		Vars["TASK_NAME"] = self.selTask
-		Vars["NUM"] = Index.getValue(self.selName, "Num")
-		Vars["NAME"] = self.selName
-		Vars["CODE"] = Index.getValue(self.selName, "Code")
-		Vars["GRP"] = self.selGroup
+			# TMP Exeptions
+			Vars["GRP"] = Vars["GRP"].replace("Heros", "Charakter").replace("Kinder", "Charakter").replace("MusikKroeten", "Charakter")
 
-		# TMP Exeptions
-		Vars["GRP"] = Vars["GRP"].replace("Heros", "Charakter").replace("Kinder", "Charakter").replace("MusikKroeten", "Charakter")
+			self.sceneFolder = SETTINGS[self.selType + "_FolderTemplate"] % Vars
 
-		self.sceneFolder = SETTINGS[self.selType + "_FolderTemplate"] % Vars
+			self.sceneList.refreshList(self.sceneFolder)
+			if not self.sceneList.setSelection2(self.selScene):
+				self.selScene = ""
 
-		self.sceneList.refreshList(self.sceneFolder)
-		if not self.sceneList.setSelection2(self.selScene):
-			self.selScene = ""
+		except Exception, e:
+			pass
+
 
 
 	def updateHeader(self):
@@ -814,12 +849,10 @@ class vuSceneSelector(QtGui.QWidget):
 
 
 	def showHelp(self):
-		reload(Help)
-		Help.showHelp()
+		ui.Help.showHelp()
 
 	def showChangeLog(self):
-		reload(ChangeLog)
-		cl = ChangeLog.ChangeLog()
+		cl = ui.ChangeLog.ChangeLog()
 		cl.setStyleSheet(style.STYLE)
 		cl.label.setStyleSheet("background-color: " + SETTINGS["COLOR_LIST"])
 		cl.exec_()
@@ -844,9 +877,6 @@ class vuSceneSelector(QtGui.QWidget):
 		# Enter
 		elif event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
 			self.sceneList.keyPressEnter()
-
-
-
 
 		elif event.key() == QtCore.Qt.Key_F1:
 			self.showHelp()
@@ -876,6 +906,14 @@ class vuSceneSelector(QtGui.QWidget):
 if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
 
+	print "Started"
+	from ui import SplashScreen
+	splashScreen = SplashScreen.SplashScreen()
+
+	loadModules()
 	window = vuSceneSelector()
+
+	splashScreen.close()
+
 	#window.show()
 	app.exec_()

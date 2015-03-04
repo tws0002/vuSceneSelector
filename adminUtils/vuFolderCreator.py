@@ -61,14 +61,17 @@ templateAsset = """
 #
 
 def createFolder(path):
-	#return
 	if not os.path.exists(path):
 		print "CreateFolder: " + path
 		os.makedirs(path)
+		return [path]
+	return [None]
 
 
 
 def createShot(shotName, tasks):
+
+	createdFolders = [] # For Popup
 
 	values = {}
 	values["ROOT_SHOTS"] = ROOT_SHOTS
@@ -79,14 +82,20 @@ def createShot(shotName, tasks):
 		values["taskName"] = taskName
 
 		template = templateShots % values
-		createFolder(template + "_OUT")
-		createFolder(template + "_WORK")
+		createdFolders += createFolder(template + "_OUT")
+		createdFolders += createFolder(template + "_WORK")
 
 		if taskName == "COMP":
-			createFolder(template + "_WORK/prerender")
+			createdFolders += createFolder(template + "_WORK/prerender")
 		if taskName in ["SIM", "LIGHT"]:
-			createFolder(template + "_WORK/rendercache")
+			createdFolders += createFolder(template + "_WORK/rendercache")
 
+
+	createdFolders = [f for f in createdFolders if f]
+
+	msgBox = QtGui.QMessageBox()
+	msgBox.setText("Created Folders:\n" + "\n".join(createdFolders))
+	msgBox.exec_()
 
 
 
