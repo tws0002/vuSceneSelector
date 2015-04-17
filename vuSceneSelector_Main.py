@@ -83,7 +83,7 @@ def loadModules():
 #
 
 VERSION_MAJOR = "4"
-VERSION_MINOR = "6.2"
+VERSION_MINOR = "6.4"
 VERSION = "v0." + VERSION_MAJOR + "." + VERSION_MINOR
 DEBUG = os.getenv("DEBUG")
 

@@ -126,9 +126,13 @@ def getSequences(path, menu, task="", asSubMenu=True):
 
 			if len(subFolders):
 				submenu = menu.addMenu(fileName)
+				addAction_OpenRV(submenu, fileName, filePath)
 				for subFileItem in sorted(subFolders, key=lambda x: x.name , reverse=True):
 					subFileName = subFileItem.name
 					addAction_OpenRV(submenu, subFileName, filePath + "/" + subFileName, folder=True)
+
+
+
 
 			elif QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
 				submenu = menu.addMenu(fileName)

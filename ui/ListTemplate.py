@@ -1,5 +1,6 @@
 from PyQt4 import QtCore, QtGui
 import sys
+import datetime
 
 
 class ListTemplate(QtGui.QListWidget):
@@ -47,8 +48,33 @@ class ListTemplate(QtGui.QListWidget):
 
 
 class TableItemTemplate(QtGui.QTableWidgetItem):
-	def __init__(self, label):
+	def __init__(self, label, dataType="text", dataRaw=0):
 		super(TableItemTemplate, self).__init__(label)
+		self.dataType = dataType
+		self.dataRaw = dataRaw
+
+
+	def __lt__(self, other):
+		if ( isinstance(other, QtGui.QTableWidgetItem) ):
+			#my_value, my_ok = self.text(Qt.EditRole).toInt()
+			#other_value, other_ok = other.data(Qt.EditRole).toInt()
+
+			if self.dataType == "text":
+				currentValue = self.text()
+				otherValue   = other.text()
+				return currentValue < otherValue
+
+			if self.dataType == "fileSize":
+				return self.dataRaw < other.dataRaw
+
+			if self.dataType == "date":
+				currentValue = datetime.datetime.strptime(str(self.text()), "%d.%m.%Y %H:%M")
+				otherValue = datetime.datetime.strptime(str(other.text()), "%d.%m.%Y %H:%M")
+				return currentValue < otherValue
+
+
+
+		return super(TableItemTemplate, self).__lt__(other)
 
 
 	# TODO:

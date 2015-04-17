@@ -137,6 +137,9 @@ class TableAssetsIcon(QtGui.QLabel):
 				#msg = self.shot + " " + self.task  + " is " + status["label"]
 				msg = status["label"]
 
+				if msg == "done":
+					msg = "you are my Hero!"
+
 				engine = pyttsx.init()
 				engine.setProperty('rate', 120)
 				engine.say(msg)

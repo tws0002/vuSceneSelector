@@ -44,7 +44,7 @@ def fileSize_HumanReadable(bytes):
 
 
 def getFile_FileSize(path):
-	return fileSize_HumanReadable(os.path.getsize(path))
+	return os.path.getsize(path)
 
 
 def createIcon(path):
@@ -134,7 +134,6 @@ class TableScenesHeader(ListTemplate.TableTemplate):
 
 
 
-
 	#                       #
 	#                       #
 #################################
@@ -200,14 +199,15 @@ class TableScenes(ListTemplate.TableTemplate):
 			self.setItem(i, 0, sceneItem)
 
 			# Date
-			newItem = ListTemplate.TableItemTemplate(getFile_LastModify(path + "/" + fileItem))
+			newItem = ListTemplate.TableItemTemplate(getFile_LastModify(path + "/" + fileItem), dataType="date")
 			newItem.setFlags(sceneItem.flags() ^ QtCore.Qt.ItemIsEditable)
 			newItem.setTextColor(QtGui.QColor(style.COLOR_TEXT_GREY))
 			newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
 			self.setItem(i, 1, newItem)
 
 			# Size
-			newItem = ListTemplate.TableItemTemplate(getFile_FileSize(path + "/" + fileItem))
+			fileSize = getFile_FileSize(path + "/" + fileItem)
+			newItem = ListTemplate.TableItemTemplate(fileSize_HumanReadable(fileSize), dataType="fileSize", dataRaw=fileSize)
 			newItem.setFlags(sceneItem.flags() ^ QtCore.Qt.ItemIsEditable)
 			newItem.setTextColor(QtGui.QColor(style.COLOR_TEXT_GREY))
 			newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
