@@ -37,6 +37,17 @@ DATA["Overview"]["Assets"]["Tasks"] = [("010", "GEO"), ("020", "TEX"), ("030", "
 DATA["Overview"]["Shots"]["Tasks"] = [("010", "TRACK"), ("020", "MATTEPAINT"), ("025", "3D"), ("030", "ANIM"), ("040", "SIM"), ("045", "SFS"), ("050", "LIGHT"), ("055", "SLAPCOMP"), ("060", "COMP")]
 
 
+DATA["Overview"]["Shots"]["Tasks"] = [
+											("000", "SOURCE"),
+											("010", "DENOISE"),
+											("020", "UNDISTORT"),
+											("030", "TRACK"),
+											("040", "DMP"),
+											("050", "3D"),
+											("060", "COMP")
+											]
+
+
 DATA["items"] = {}
 
 """

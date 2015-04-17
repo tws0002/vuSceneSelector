@@ -6,14 +6,14 @@ SETTINGS = Settings.SETTINGS
 
 #FILE_BLACKLIST = [".nk~", ".autosave"]
 FILE_WHITELIST = []
-FILE_WHITELIST += [".sni"]				# Tracking
-FILE_WHITELIST += [".lxo"]				# Modo
+FILE_WHITELIST += [".sni"]					# Tracking
+FILE_WHITELIST += [".lxo"]					# Modo
 FILE_WHITELIST += [".mud", ".mra", ".psd"]	# Texturing
-FILE_WHITELIST += [".hip", ".hipnc"]	# Houdni
-FILE_WHITELIST += [".ma", ".mb"]		# Maya
-FILE_WHITELIST += [".scn"]				# Softimage
-FILE_WHITELIST += [".nk"]				# Nuke
-FILE_WHITELIST += [".psz"]				# Nuke
+FILE_WHITELIST += [".hip", ".hipnc"]		# Houdni
+FILE_WHITELIST += [".ma", ".mb"]			# Maya
+FILE_WHITELIST += [".scn"]					# Softimage
+FILE_WHITELIST += [".nk"]					# Nuke
+FILE_WHITELIST += [".psz"]					# Nuke
 
 
 def checkFiles(path):

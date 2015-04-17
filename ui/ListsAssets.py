@@ -318,9 +318,10 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 		elif self.filterType == "search":
 			names = [name for name in names if self.selGroup in name]
 
+		# Filter by TaskIcons in TableHeader
 		for taskName, value in self.FilterTasks.iteritems():
 			if value:
-				names = [name for name in names if Index.getValue(name, taskName + "_Status")]
+				names = [name for name in names if Index.getValue(name, taskName + "_Status") not in ["", "1"]]
 
 
 		# Add them!
@@ -372,6 +373,7 @@ class TableAssets(ListTemplate.TableTemplate, QtGui.QTableWidget):
 
 
 	def getFootageFolder(self):
+		print SETTINGS["FootageFolder"] % {"NAME": self.parent.selName}
 		return SETTINGS["FootageFolder"] % {"NAME": self.parent.selName}
 
 

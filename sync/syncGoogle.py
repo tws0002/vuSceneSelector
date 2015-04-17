@@ -17,7 +17,8 @@ SETTINGS_PROJECT = os.getenv("SETTINGS_PROJECT")
 if not SETTINGS_PROJECT:
 	print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 	settings_Folder =  rootDir + "/_ProjectSettings/"
-	SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+	SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
 	#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
 	#SETTINGS_PROJECT = "F:/070_SOFTWARE/_Tools/vuSceneSelector_Settings/project_Flut.py"
 

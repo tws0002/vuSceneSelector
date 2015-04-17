@@ -4,19 +4,11 @@
 
 
 
-
 # Globals for Modules
-
-
-
-
-
 from PyQt4 import QtCore, QtGui
 import os
 import sys
 import time
-
-
 
 
 
@@ -32,9 +24,9 @@ def loadModules():
 	if not SETTINGS_PROJECT:
 		print "[ERROR] SETTINGS_PROJECT not set via Envoriment-Variable!"
 		settings_Folder =  os.path.dirname(os.path.abspath(__file__)) + "/_ProjectSettings/"
-		SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
+		#SETTINGS_PROJECT = settings_Folder + "project_Jagon.py"
 		#SETTINGS_PROJECT = settings_Folder + "project_Kroetenlied.py"
-		#SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
+		SETTINGS_PROJECT = settings_Folder + "project_Flut.py"
 
 
 

@@ -153,6 +153,7 @@ class Header(QtGui.QWidget):
 
 		for attr in INFOS:
 			valueWidget = self.valueWidgets[attr]
+			print attr
 			valueWidget.setText(Index.getValue(selName, attr))
 
 

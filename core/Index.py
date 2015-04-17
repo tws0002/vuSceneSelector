@@ -78,7 +78,7 @@ def reWriteOverviewFlut():
 	data["Overview"]["Assets"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('035', 'ANIM'), ('040', 'SHD')]
 	data["Overview"]["Shots"] = {}
 	data["Overview"]["Shots"]["Tasks"] = []
-	data["Overview"]["Shots"]["Tasks"] = [('030', 'TRACK'), ('040', 'DMP'), ("050", "3D"), ('060', 'COMP')]
+	data["Overview"]["Shots"]["Tasks"] = [("010", "DENOISE"), ("020", "UNDISTORT"), ('030', 'TRACK'), ('040', 'DMP'), ("050", "3D"), ('060', 'COMP')]
 	#save(data)
 
 
