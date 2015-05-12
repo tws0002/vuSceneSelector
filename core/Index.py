@@ -60,7 +60,7 @@ def reWriteOverviewJagon():
 	data["Overview"]["Assets"]["Tasks"] = [('010', 'GEO'), ('020', 'TEX'), ('030', 'RIG'), ('040', 'SHD')]
 	data["Overview"]["Shots"] = {}
 	data["Overview"]["Shots"]["Tasks"] = []
-	data["Overview"]["Shots"]["Tasks"] = [('010', 'TRACK'), ('020', 'MATTEPAINT'), ("025", "3D"), ('030', 'ANIM'), ("040", "SIM"), ("045", "SFS"), ("050", "LIGHT"), ("055", "SLAPCOMP"), ("060", "COMP")]
+	data["Overview"]["Shots"]["Tasks"] = [('010', 'TRACK'), ("025", "3D"), ('030', 'ANIM'), ("040", "SIM"), ("050", "LIGHT"), ("055", "SLAPCOMP"), ("060", "COMP"), ("070", "MKOF")]
 	#save(data)
 
 

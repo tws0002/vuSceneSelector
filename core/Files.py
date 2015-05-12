@@ -4,6 +4,9 @@ from core import Settings
 SETTINGS = Settings.SETTINGS
 
 
+PHOTOSHOP_PATH = "C:/Program Files/Adobe/Adobe Photoshop CS6 (64 Bit)/Photoshop.exe"
+
+
 #FILE_BLACKLIST = [".nk~", ".autosave"]
 FILE_WHITELIST = []
 FILE_WHITELIST += [".sni"]					# Tracking
@@ -69,7 +72,6 @@ def openScene(path):
 		os.system(SETTINGS["NUKE_BATCH"] + " " + path)
 		return "Open NukeScene: " + path
 
-
 	if ext == ".mud":
 		os.system(path)
 		return "Open MudboxScene: " + path
@@ -78,6 +80,13 @@ def openScene(path):
 		os.system(SETTINGS["HOUDINI_BATCH"] + " " + path)
 		print SETTINGS["HOUDINI_BATCH"] + " " + path
 		return "Open HoudiniScene: " + path
+
+	if ext in [".psd", ".tif", ".tiff"]:
+		os.system(path)
+		#os.system("start " + PHOTOSHOP_PATH + ' "' + path + '"')
+		print "Open Photoshop", path
+
+
 
 	return "[ERROR] Dont know how to handle this file. Plase RightClick and select 'Show in Folder'"
 
